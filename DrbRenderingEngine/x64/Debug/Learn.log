@@ -1,0 +1,19 @@
+﻿  BVulkan.cpp
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.cpp(12,15): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.cpp(489,37): error C2065: “VK_COLOR_SPACE_BEGIN_RANGE_KHR”: 未声明的标识符
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.cpp(492,91): error C2065: “VK_COLOR_SPACE_BEGIN_RANGE_KHR”: 未声明的标识符
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.cpp(1740,80): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.cpp(1741,91): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+  main.cpp
+  scene.cpp
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(19,42): error C2664: “void aCreateShader(VkShaderModule &,unsigned char *,int)”: 无法将参数 1 从“GLuint”转换为“VkShaderModule &”
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.h(229,6): message : 参见“aCreateShader”的声明
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(22,42): error C2664: “void aCreateShader(VkShaderModule &,unsigned char *,int)”: 无法将参数 1 从“GLuint”转换为“VkShaderModule &”
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.h(229,6): message : 参见“aCreateShader”的声明
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(24,33): error C2664: “void aAttachVertexShader(AVulkanHandle,VkShaderModule)”: 无法将参数 2 从“GLuint”转换为“VkShaderModule”
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(24,31): message : 从整型强制转换为指针类型要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.h(235,6): message : 参见“aAttachVertexShader”的声明
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(25,35): error C2664: “void aAttachFragmentShader(AVulkanHandle,VkShaderModule)”: 无法将参数 2 从“GLuint”转换为“VkShaderModule”
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\scene.cpp(25,33): message : 从整型强制转换为指针类型要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+C:\Users\Administrator\Downloads\Vulkan萌谷手册\006\BVulkan.h(236,6): message : 参见“aAttachFragmentShader”的声明
+  正在生成代码...

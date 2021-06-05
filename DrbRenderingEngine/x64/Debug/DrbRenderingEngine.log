@@ -1,0 +1,27 @@
+﻿D:\VS2019\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(491,5): warning MSB8028: 中间目录(x64\Debug\)包含从另一个项目(Learn.vcxproj)共享的文件。   这会导致错误的清除和重新生成行为。
+  BVulkan.cpp
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.cpp(12,15): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.cpp(1740,80): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.cpp(1741,91): warning C4267: “=”: 从“size_t”转换到“uint32_t”，可能丢失数据
+  main.cpp
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(31,48): error C2440: “=”: 无法从“const wchar_t [17]”转换为“LPCSTR”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(31,29): message : 与指向的类型无关；强制转换要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(35,59): error C2664: “int MessageBoxA(HWND,LPCSTR,LPCSTR,UINT)”: 无法将参数 2 从“const wchar_t [7]”转换为“LPCSTR”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(35,20): message : 与指向的类型无关；强制转换要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winuser.h(9145,1): message : 参见“MessageBoxA”的声明
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(40,14): error C2664: “HWND CreateWindowExA(DWORD,LPCSTR,LPCSTR,DWORD,int,int,int,int,HWND,HMENU,HINSTANCE,LPVOID)”: 无法将参数 2 从“const wchar_t [17]”转换为“LPCSTR”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\main.cpp(40,35): message : 与指向的类型无关；强制转换要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.18362.0\um\winuser.h(4420,1): message : 参见“CreateWindowExA”的声明
+  scene.cpp
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(19,42): error C2664: “void aCreateShader(VkShaderModule &,unsigned char *,int)”: 无法将参数 1 从“GLuint”转换为“VkShaderModule &”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.h(229,6): message : 参见“aCreateShader”的声明
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(22,42): error C2664: “void aCreateShader(VkShaderModule &,unsigned char *,int)”: 无法将参数 1 从“GLuint”转换为“VkShaderModule &”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.h(229,6): message : 参见“aCreateShader”的声明
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(24,33): error C2664: “void aAttachVertexShader(AVulkanHandle,VkShaderModule)”: 无法将参数 2 从“GLuint”转换为“VkShaderModule”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(24,31): message : 从整型强制转换为指针类型要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.h(235,6): message : 参见“aAttachVertexShader”的声明
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(25,35): error C2664: “void aAttachFragmentShader(AVulkanHandle,VkShaderModule)”: 无法将参数 2 从“GLuint”转换为“VkShaderModule”
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\scene.cpp(25,33): message : 从整型强制转换为指针类型要求 reinterpret_cast、C 样式强制转换或函数样式强制转换
+D:\projects\cppProjects\PGART\DrbRenderingEngine\DrbRenderingEngine\BVulkan.h(236,6): message : 参见“aAttachFragmentShader”的声明
+  XVulkan.cpp
+  正在生成代码...
