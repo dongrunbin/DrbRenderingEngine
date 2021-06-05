@@ -130,12 +130,12 @@
     <ClCompile Include="BVulkan.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="scene.cpp" />
-    <ClCompile Include="XVulkan.cpp" />
+    <ClCompile Include="VulkanAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVulkan.h" />
     <ClInclude Include="scene.h" />
-    <ClInclude Include="XVulkan.h" />
+    <ClInclude Include="VulkanAPI.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

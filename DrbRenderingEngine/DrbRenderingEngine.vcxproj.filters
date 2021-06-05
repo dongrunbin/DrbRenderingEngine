@@ -24,7 +24,7 @@
     <ClCompile Include="scene.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="XVulkan.cpp">
+    <ClCompile Include="VulkanAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="scene.h">
       <Filter>源文件</Filter>
     </ClInclude>
-    <ClInclude Include="XVulkan.h">
+    <ClInclude Include="VulkanAPI.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
