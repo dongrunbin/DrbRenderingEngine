@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\office\vulkan1.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libs\include;E:\office\vulkan1.2\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/D_CRT_SECURE_NO_WARNINGS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>E:\office\vulkan1.2\Lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>libs\lib;E:\office\vulkan1.2\Lib32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>editbin /subsystem:console $(OutDir)$(ProjectName).exe</Command>
@@ -130,12 +130,18 @@
     <ClCompile Include="BVulkan.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="stb_image_aug.c" />
     <ClCompile Include="VulkanAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVulkan.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="stb_image_aug.h" />
     <ClInclude Include="VulkanAPI.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\test.fs" />
+    <None Include="Res\test.vs" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

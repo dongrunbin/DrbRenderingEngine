@@ -27,6 +27,9 @@
     <ClCompile Include="VulkanAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="stb_image_aug.c">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVulkan.h">
@@ -38,5 +41,16 @@
     <ClInclude Include="VulkanAPI.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="stb_image_aug.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Res\test.fs">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\test.vs">
+      <Filter>Res</Filter>
+    </None>
   </ItemGroup>
 </Project>
