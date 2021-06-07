@@ -1,100 +1,77 @@
 #include "BVulkan.h"
 #include "scene.h"
 #include "VulkanAPI.h"
-XProgram* program;
-XBufferObject* vbo;
-XUniformBuffer* ubo;
-XBufferObject* ibo;
-XTexture* texture;
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "UniformBuffer.h"
+#include "Texture2D.h"
+#include "Material.h"
+#include "FullScreenQuad.h"
+#include "Ground.h"
+#include "Camera.h"
+
+Texture2D* texture;
+Material* testMaterial;
+XFixedPipeline* testPipeline;
+Material* fsqMaterial;
+XFixedPipeline* fsqPipeline;
+FullScreenQuad* fsq;
+Ground* ground;
+Camera* camera;
 void Init()
 {
+	camera = new Camera;
+	camera->cameraPos = glm::vec3(0.0f, 5.0f, -20.0f);
+	camera->Pitch(25.0f);
+	
 	xInitDefaultTexture();
-	Vertex vertexes[3];
-	vertexes[0].SetPosition(-0.5f, -0.5f, -2.0f);
-	vertexes[0].SetTexcoord(0.0f, 0.0f);
-	vertexes[0].SetNormal(1.0f, 0.0f, 1.0f, 0.2f);
-	vertexes[1].SetPosition(0.5f, -0.5f, -2.0f);
-	vertexes[1].SetTexcoord(1.0f, 0.0f);
-	vertexes[1].SetNormal(1.0f, 1.0f, 0.0f, 1.0f);
-	vertexes[2].SetPosition(0.0f, 0.5f, -2.0f);
-	vertexes[2].SetTexcoord(0.5f, 1.0f);
-	vertexes[2].SetNormal(0.0f, 1.0f, 1.0f, 1.0f);
-	vbo = new XBufferObject;
-	xglBufferData(vbo, sizeof(Vertex) * 3, vertexes);
-	ibo = new XBufferObject;
-	unsigned int indexes[] = { 0, 1, 2 };
-	xGenIndexBuffer(sizeof(unsigned int) * 3, ibo->buffer, ibo->memory);
-	xBufferSubIndexData(ibo->buffer, indexes, sizeof(unsigned int) * 3);
-	program = new XProgram;
-	GLuint vs, fs;
-	int file_len = 0;
-	unsigned char *file_content = LoadFileContent("Res/test.vsb", file_len);
-	xCreateShader(vs, file_content, file_len);
-	delete[]file_content;
-	file_content = LoadFileContent("Res/test.fsb", file_len);
-	xCreateShader(fs, file_content, file_len);
-	delete[]file_content;
-	xAttachVertexShader(program, vs);
-	xAttachFragmentShader(program, fs);
-	xLinkProgram(program);
-
-	ubo = new XUniformBuffer;
-	ubo->type = XUniformBufferTypeMatrix;
-	ubo->matrices.resize(8);
+	testMaterial = new Material;
+	testMaterial->Init("Res/test.vsb", "Res/test.fsb");
+	glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)) * glm::rotate(glm::mat4(1.0f), 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 projection = glm::perspective(45.0f, float(GetViewportWidth()) / float(GetViewportHeight()), 0.1f, 60.0f);
 	projection[1][1] *= -1.0f;
-	memcpy(ubo->matrices[2].data, glm::value_ptr(projection), sizeof(XMatrix4x4f));
+	testMaterial->SetMVP(model, camera->GetViewMat(), projection);
+	testMaterial->SubmitUniformBuffers();
+	testPipeline = new XFixedPipeline;
+	xSetColorAttachmentCount(testPipeline, 1);
+	testPipeline->mRenderPass = GetGlobalRenderPass();
+	testMaterial->SetFixedPipeline(testPipeline);
+	testPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	testPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	testMaterial->Finish();
+	texture = new Texture2D;
+	texture->SetImage("Res/test.bmp");
+	testMaterial->SetTexture(0, texture);
 
-	xGenBuffer(ubo->buffer, ubo->memory, sizeof(XMatrix4x4f) * 8,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	xSubmitUniformBuffer(ubo);
+	// fsq
+	fsqMaterial = new Material;
+	fsqMaterial->Init("Res/fsq.vsb", "Res/fsq.fsb");
+	fsqMaterial->SubmitUniformBuffers();
+	fsqPipeline = new XFixedPipeline;
+	xSetColorAttachmentCount(fsqPipeline, 1);
+	fsqPipeline->mRenderPass = GetGlobalRenderPass();
+	fsqMaterial->SetFixedPipeline(fsqPipeline);
+	fsqPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	fsqPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	fsqPipeline->mInputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+	fsqMaterial->Finish();
+	
+	fsq = new FullScreenQuad;
+	fsq->Init();
+	fsqMaterial->SetTexture(0, texture);
+	fsq->material = fsqMaterial;
 
-	texture = new XTexture;
-	texture->format = VK_FORMAT_R8G8B8A8_UNORM;
-	int imageWidth, imageHeight, channel;
-	unsigned char* pixel = LoadImageFromFile("Res/test.bmp", imageWidth, imageHeight, channel, 4, false);
-	xGenImage(texture, imageWidth, imageHeight, VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
-	xSubmitImage2D(texture, imageWidth, imageHeight, pixel);
-	xGenImageView2D(texture);
-	xGenSampler(texture);
-	delete[] pixel;
+	ground = new Ground();
+	ground->Init();
+	ground->SetMaterial(testMaterial);
 }
 void Draw(float deltaTime)
 {
-	static float r = 0.0f;
-	static float accTime = 0.0f;
-	static bool modifiedTexture = false;
-	static bool modifiedUBO = false;
-	r += deltaTime;
-	accTime += deltaTime;
-
-	if (r >= 1.0f)
-	{
-		r = 0.0f;
-	}
-	if (accTime > 3.0f && !modifiedTexture)
-	{
-		modifiedTexture = true;
-		//int imageWidth, imageHeight, channel;
-		//unsigned char* pixel = LoadImageFromFile("Res/test.bmp", imageWidth, imageHeight, channel, 4, false);
-		//xSubmitImage2D(xGetDefaultTexture(), imageWidth, imageHeight, pixel);
-		//delete[] pixel;
-		xRebindSampler(program, 4, texture->imageView, texture->sampler);
-	}
-	if (accTime > 3.0f && !modifiedUBO)
-	{
-		modifiedUBO = true;
-		xRebindUniformBuffer(program, 1, ubo);
-	}
-	float color[] = { r,r,r,1.0f };
-	aClearColor(0.1f, 0.4f, 0.6f, 1.0f);
 	VkCommandBuffer commandbuffer = xBeginRendering();
-	xUseProgram(program);
-	xBindVertexBuffer(vbo);
-	xBindElementBuffer(ibo);
-	xUniform4fv(program, 2, color);
-	//xDrawArrays(commandbuffer, 0, 3);
-	xDrawElements(commandbuffer, 0, 3);
+
+	//fsq->Draw(commandbuffer);
+	ground->Draw(commandbuffer);
+	
 	xEndRendering();
 	xSwapBuffers(commandbuffer);
 }
@@ -104,26 +81,30 @@ void OnViewportChanged(int width, int height)
 }
 void OnQuit()
 {
-	if (program != nullptr)
+	if (testPipeline != nullptr)
 	{
-		delete (XProgram*)program;
+		delete testPipeline;
 	}
-	if (vbo != nullptr)
+	if (fsqPipeline != nullptr)
 	{
-		glDeleteBufferObject(vbo);
+		delete fsqPipeline;
 	}
 	if (texture != nullptr)
 	{
 		delete texture;
 	}
-	if (ubo != nullptr)
+	if (ground != nullptr)
 	{
-		delete ubo;
+		delete ground;
 	}
-	if (ibo != nullptr)
+	if (fsq != nullptr)
 	{
-		glDeleteBufferObject(ibo);
+		delete fsq;
 	}
-
+	if (camera != nullptr)
+	{
+		delete camera;
+	}
+	Material::CleanUp();
 	xVulkanCleanUp();
 }

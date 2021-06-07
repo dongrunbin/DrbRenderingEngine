@@ -30,6 +30,30 @@
     <ClCompile Include="stb_image_aug.c">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="UniformBuffer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture2D.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Material.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FullScreenQuad.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Ground.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BVulkan.h">
@@ -44,12 +68,42 @@
     <ClInclude Include="stb_image_aug.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexBuffer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="UniformBuffer.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FullScreenQuad.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Ground.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\test.fs">
       <Filter>Res</Filter>
     </None>
     <None Include="Res\test.vs">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\fsq.fs">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\fsq.vs">
       <Filter>Res</Filter>
     </None>
   </ItemGroup>

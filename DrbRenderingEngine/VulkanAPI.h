@@ -11,12 +11,25 @@
 #include "glm/ext.hpp"
 
 typedef void* XVulkanHandle;
+
+enum XBufferObjectType
+{
+	XBufferObjectTypeVertexBuffer,
+	XBufferObjectTypeIndexBuffer,
+	XBufferObjectTypeUniformBuffer,
+	XBufferObjectTypeCount
+};
+
 struct XBufferObject 
 {
 	VkBuffer buffer;
 	VkDeviceMemory memory;
+	XBufferObjectType type;
 	XBufferObject();
-	~XBufferObject();
+	virtual ~XBufferObject();
+	void OnSetSize();
+	void SubmitData(const void* data, int size);
+	virtual int GetSize();
 };
 
 struct XMatrix4x4f
@@ -224,7 +237,7 @@ void xInitDescriptorSet(XProgram* program);
 
 void xSubmitUniformBuffer(XUniformBuffer* uniformBuffer);
 
-void xConfigUniformBuffer(XVulkanHandle param, int binding, XUniformBuffer* ubo, VkShaderStageFlags shaderStageFlags);
+void xConfigUniformBuffer(XVulkanHandle param, int binding, XBufferObject* ubo, VkShaderStageFlags shaderStageFlags);
 
 void xGenImage(XTexture* texture, uint32_t w, uint32_t h, VkFormat format, VkImageUsageFlags usage, 
 	VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT, int mipmap = 1);

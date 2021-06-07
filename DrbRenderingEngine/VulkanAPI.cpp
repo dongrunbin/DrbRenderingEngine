@@ -29,6 +29,48 @@ XBufferObject::~XBufferObject()
 	}
 }
 
+void XBufferObject::OnSetSize()
+{
+	if (type == XBufferObjectTypeVertexBuffer)
+	{
+		xGenVertexBuffer(GetSize(), buffer, memory);
+	}
+	else if (type == XBufferObjectTypeIndexBuffer)
+	{
+		xGenIndexBuffer(GetSize(), buffer, memory);
+	}
+	else if (type == XBufferObjectTypeUniformBuffer)
+	{
+		xGenBuffer(buffer, memory, GetSize(),
+			VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+			VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	}
+}
+
+void XBufferObject::SubmitData(const void* data, int size)
+{
+	if (type == XBufferObjectTypeVertexBuffer)
+	{
+		xBufferSubVertexData(buffer, data, size);
+	}
+	else if (type == XBufferObjectTypeIndexBuffer)
+	{
+		xBufferSubIndexData(buffer, data, size);
+	}
+	else if (type == XBufferObjectTypeUniformBuffer)
+	{
+		void* dst;
+		vkMapMemory(GetVulkanDevice(), memory, 0, size, 0, &dst);
+		memcpy(dst, data, size);
+		vkUnmapMemory(GetVulkanDevice(), memory);
+	}
+}
+
+int XBufferObject::GetSize()
+{
+	return 0;
+}
+
 XUniformBuffer::XUniformBuffer()
 {
 	buffer = 0;
@@ -412,87 +454,86 @@ void xAttachFragmentShader(XProgram* program, VkShaderModule shader)
 
 void xLinkProgram(XProgram* program)
 {
+	//program->vertexShaderVectorUniformBuffer.type = XUniformBufferTypeVector;
+	//program->vertexShaderVectorUniformBuffer.vectors.resize(8);
+	//program->vertexShaderVectorUniformBuffer.vectors[0].data[0] = 1.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[0].data[1] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[0].data[2] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[0].data[3] = 1.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[1].data[0] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[1].data[1] = 1.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[1].data[2] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[1].data[3] = 1.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[2].data[0] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[2].data[1] = 0.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[2].data[2] = 1.0f;
+	//program->vertexShaderVectorUniformBuffer.vectors[2].data[3] = 1.0f;
 
-	program->vertexShaderVectorUniformBuffer.type = XUniformBufferTypeVector;
-	program->vertexShaderVectorUniformBuffer.vectors.resize(8);
-	program->vertexShaderVectorUniformBuffer.vectors[0].data[0] = 1.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[0].data[1] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[0].data[2] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[0].data[3] = 1.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[1].data[0] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[1].data[1] = 1.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[1].data[2] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[1].data[3] = 1.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[2].data[0] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[2].data[1] = 0.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[2].data[2] = 1.0f;
-	program->vertexShaderVectorUniformBuffer.vectors[2].data[3] = 1.0f;
+	//xGenBuffer(program->vertexShaderVectorUniformBuffer.buffer, program->vertexShaderVectorUniformBuffer.memory, sizeof(XVector4f) * 8,
+	//	VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	//xSubmitUniformBuffer(&program->vertexShaderVectorUniformBuffer);
+	//xConfigUniformBuffer(program, 0, &program->vertexShaderVectorUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT);
 
-	xGenBuffer(program->vertexShaderVectorUniformBuffer.buffer, program->vertexShaderVectorUniformBuffer.memory, sizeof(XVector4f) * 8,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	xSubmitUniformBuffer(&program->vertexShaderVectorUniformBuffer);
-	xConfigUniformBuffer(program, 0, &program->vertexShaderVectorUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT);
+	//program->vertexShaderMatrixUniformBuffer.type = XUniformBufferTypeMatrix;
+	//program->vertexShaderMatrixUniformBuffer.matrices.resize(8);
+	//glm::mat4 projection = glm::perspective(45.0f, float(GetViewportWidth()) / float(GetViewportHeight()), 0.1f, 60.0f);
+	//projection[1][1] *= -1.0f;
+	//memcpy(program->vertexShaderMatrixUniformBuffer.matrices[0].data, glm::value_ptr(projection), sizeof(XMatrix4x4f));
 
-	program->vertexShaderMatrixUniformBuffer.type = XUniformBufferTypeMatrix;
-	program->vertexShaderMatrixUniformBuffer.matrices.resize(8);
-	glm::mat4 projection = glm::perspective(45.0f, float(GetViewportWidth()) / float(GetViewportHeight()), 0.1f, 60.0f);
-	projection[1][1] *= -1.0f;
-	memcpy(program->vertexShaderMatrixUniformBuffer.matrices[0].data, glm::value_ptr(projection), sizeof(XMatrix4x4f));
+	//xGenBuffer(program->vertexShaderMatrixUniformBuffer.buffer, program->vertexShaderMatrixUniformBuffer.memory, sizeof(XMatrix4x4f) * 8,
+	//	VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	//xSubmitUniformBuffer(&program->vertexShaderMatrixUniformBuffer);
+	//xConfigUniformBuffer(program, 1, &program->vertexShaderMatrixUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT);
 
-	xGenBuffer(program->vertexShaderMatrixUniformBuffer.buffer, program->vertexShaderMatrixUniformBuffer.memory, sizeof(XMatrix4x4f) * 8,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	xSubmitUniformBuffer(&program->vertexShaderMatrixUniformBuffer);
-	xConfigUniformBuffer(program, 1, &program->vertexShaderMatrixUniformBuffer, VK_SHADER_STAGE_VERTEX_BIT);
+	//xGenBuffer(program->fragmentShaderVectorUniformBuffer.buffer, program->fragmentShaderVectorUniformBuffer.memory, sizeof(XVector4f) * 8,
+	//	VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	//program->fragmentShaderVectorUniformBuffer.type = XUniformBufferTypeVector;
+	//program->fragmentShaderVectorUniformBuffer.vectors.resize(8);
+	//xConfigUniformBuffer(program, 2, &program->fragmentShaderVectorUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//xGenBuffer(program->fragmentShaderMatrixUniformBuffer.buffer, program->fragmentShaderMatrixUniformBuffer.memory, sizeof(XMatrix4x4f) * 8,
+	//	VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+	//program->fragmentShaderMatrixUniformBuffer.type = XUniformBufferTypeMatrix;
+	//program->fragmentShaderMatrixUniformBuffer.matrices.resize(8);
+	//xConfigUniformBuffer(program, 3, &program->fragmentShaderMatrixUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT);
 
-	xGenBuffer(program->fragmentShaderVectorUniformBuffer.buffer, program->fragmentShaderVectorUniformBuffer.memory, sizeof(XVector4f) * 8,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	program->fragmentShaderVectorUniformBuffer.type = XUniformBufferTypeVector;
-	program->fragmentShaderVectorUniformBuffer.vectors.resize(8);
-	xConfigUniformBuffer(program, 2, &program->fragmentShaderVectorUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT);
-	xGenBuffer(program->fragmentShaderMatrixUniformBuffer.buffer, program->fragmentShaderMatrixUniformBuffer.memory, sizeof(XMatrix4x4f) * 8,
-		VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_COHERENT_BIT | VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
-	program->fragmentShaderMatrixUniformBuffer.type = XUniformBufferTypeMatrix;
-	program->fragmentShaderMatrixUniformBuffer.matrices.resize(8);
-	xConfigUniformBuffer(program, 3, &program->fragmentShaderMatrixUniformBuffer, VK_SHADER_STAGE_FRAGMENT_BIT);
+	//xConfigSampler2D(program, 4, sDefaultTexture->imageView, sDefaultTexture->sampler);
 
-	xConfigSampler2D(program, 4, sDefaultTexture->imageView, sDefaultTexture->sampler);
+	////配置GPU程序
 
-	//配置GPU程序
+	////描述GPU程序有些什么输入的
+	//xInitDescriptorSetLayout(program);
+	////生成Uniform插槽的管理器
+	//xInitDescriptorPool(program);
+	////生成真正的插槽，这些插槽可以插入真正的Uniform buffer或者sampler2d
+	//xInitDescriptorSet(program);
 
-	//描述GPU程序有些什么输入的
-	xInitDescriptorSetLayout(program);
-	//生成Uniform插槽的管理器
-	xInitDescriptorPool(program);
-	//生成真正的插槽，这些插槽可以插入真正的Uniform buffer或者sampler2d
-	xInitDescriptorSet(program);
+	//program->fixedPipeline.mDescriptorSetLayout = &program->descriptorSetLayout;
+	//program->fixedPipeline.mDescriptorSetLayoutCount = 1;
+	//program->fixedPipeline.mPushConstants[0].data[1] = 0.5f;
 
-	program->fixedPipeline.mDescriptorSetLayout = &program->descriptorSetLayout;
-	program->fixedPipeline.mDescriptorSetLayoutCount = 1;
-	program->fixedPipeline.mPushConstants[0].data[1] = 0.5f;
+	////生成渲染管线
 
-	//生成渲染管线
+	////给渲染管线配置上生成的Uniform的信息
+	//aSetDescriptorSetLayout(&program->fixedPipeline, &program->descriptorSetLayout);
+	////设置渲染管线上有什么shader
+	//aSetShaderStage(&program->fixedPipeline, program->shaderStages, 2);
+	////设置渲染管线最终会渲染到多少张颜色缓冲区上去
+	//aSetColorAttachmentCount(&program->fixedPipeline, 1);
 
-	//给渲染管线配置上生成的Uniform的信息
-	aSetDescriptorSetLayout(&program->fixedPipeline, &program->descriptorSetLayout);
-	//设置渲染管线上有什么shader
-	aSetShaderStage(&program->fixedPipeline, program->shaderStages, 2);
-	//设置渲染管线最终会渲染到多少张颜色缓冲区上去
-	aSetColorAttachmentCount(&program->fixedPipeline, 1);
+	////xEnableBlend(&program->fixedPipeline, 0, VK_TRUE);
+	////xBlend(&program->fixedPipeline, 0, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA,
+	////	VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE);
+	////xPolygonMode(&program->fixedPipeline, VK_POLYGON_MODE_LINE);
+	////xDisableRasterizer(&program->fixedPipeline, VK_TRUE);
+	////xEnableDepthTest(&program->fixedPipeline, VK_TRUE);
 
-	//xEnableBlend(&program->fixedPipeline, 0, VK_TRUE);
-	//xBlend(&program->fixedPipeline, 0, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_SRC_ALPHA,
-	//	VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ONE);
-	//xPolygonMode(&program->fixedPipeline, VK_POLYGON_MODE_LINE);
-	//xDisableRasterizer(&program->fixedPipeline, VK_TRUE);
-	//xEnableDepthTest(&program->fixedPipeline, VK_TRUE);
+	////设置render pass， 它描述了fbo上最终有多少个颜色缓冲区、是否有深度缓冲区、是否开启了MSAA
+	//aSetRenderPass(&program->fixedPipeline, GetGlobalRenderPass());
 
-	//设置render pass， 它描述了fbo上最终有多少个颜色缓冲区、是否有深度缓冲区、是否开启了MSAA
-	aSetRenderPass(&program->fixedPipeline, GetGlobalRenderPass());
-
-	program->fixedPipeline.mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()) };
-	//绘图的可见区域
-	program->fixedPipeline.mScissor = { {0, 0}, {uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight())} };
-	aCreateGraphicPipeline(&program->fixedPipeline);
+	//program->fixedPipeline.mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()) };
+	////绘图的可见区域
+	//program->fixedPipeline.mScissor = { {0, 0}, {uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight())} };
+	//aCreateGraphicPipeline(&program->fixedPipeline);
 }
 
 void xInitDescriptorSetLayout(XProgram* program)
@@ -538,25 +579,7 @@ void xInitDescriptorSet(XProgram* program)
 	vkUpdateDescriptorSets(GetVulkanDevice(), uint32_t(program->writeDescriptorSet.size()), program->writeDescriptorSet.data(), 0, nullptr);
 }
 
-void xSubmitUniformBuffer(XUniformBuffer* uniformBuffer)
-{
-	void* dst;
-	if (uniformBuffer->type == XUniformBufferTypeMatrix)
-	{
-		int size = sizeof(XMatrix4x4f) * uniformBuffer->matrices.size();
-		vkMapMemory(GetVulkanDevice(), uniformBuffer->memory, 0, size, 0, &dst);
-		memcpy(dst, uniformBuffer->matrices.data(), size);
-	}
-	else if (uniformBuffer->type == XUniformBufferTypeVector)
-	{
-		int size = sizeof(XVector4f) * uniformBuffer->vectors.size();
-		vkMapMemory(GetVulkanDevice(), uniformBuffer->memory, 0, size, 0, &dst);
-		memcpy(dst, uniformBuffer->vectors.data(), size);
-	}
-	vkUnmapMemory(GetVulkanDevice(), uniformBuffer->memory);
-}
-
-void xConfigUniformBuffer(XVulkanHandle param, int binding, XUniformBuffer* ubo, VkShaderStageFlags shaderStageFlags)
+void xConfigUniformBuffer(XVulkanHandle param, int binding, XBufferObject* ubo, VkShaderStageFlags shaderStageFlags)
 {
 	XProgram* program = (XProgram*)param;
 	VkDescriptorSetLayoutBinding bind = {};
@@ -572,14 +595,7 @@ void xConfigUniformBuffer(XVulkanHandle param, int binding, XUniformBuffer* ubo,
 	VkDescriptorBufferInfo* bufferInfo = new VkDescriptorBufferInfo;
 	bufferInfo->offset = 0;
 	bufferInfo->buffer = ubo->buffer;
-	if (ubo->type == XUniformBufferTypeMatrix)
-	{
-		bufferInfo->range = sizeof(XMatrix4x4f) * ubo->matrices.size();
-	}
-	else
-	{
-		bufferInfo->range = sizeof(XVector4f) * ubo->vectors.size();
-	}
+	bufferInfo->range = ubo->GetSize();
 	VkWriteDescriptorSet set = {};
 	set.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
 	set.dstSet = program->descriptorSet;
@@ -797,8 +813,8 @@ void xConfigSampler2D(XProgram* program, int binding, VkImageView imageview, VkS
 }
 
 void xUniform4fv(XProgram* program, int location, float* v) {
-	memcpy(program->vertexShaderVectorUniformBuffer.vectors[location].data, v, sizeof(XVector4f));
-	xSubmitUniformBuffer(&program->vertexShaderVectorUniformBuffer);
+	//memcpy(program->vertexShaderVectorUniformBuffer.vectors[location].data, v, sizeof(XVector4f));
+	//xSubmitUniformBuffer(&program->vertexShaderVectorUniformBuffer);
 }
 
 unsigned char* LoadImageFromFile(const char* path, int& width, int& height, int& channel,
@@ -1065,7 +1081,8 @@ void xCreateFixedPipeline(XFixedPipeline* p) {
 	vkCreateGraphicsPipelines(GetVulkanDevice(), VK_NULL_HANDLE, 1, &pipelineinfo, nullptr,
 		&p->mPipeline);
 }
-void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer) {
+void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer)
+{
 	vkCmdSetViewport(commandbuffer, 0, 1, &p->mViewport);
 	vkCmdSetScissor(commandbuffer, 0, 1, &p->mScissor);
 	vkCmdSetDepthBias(commandbuffer, p->mDepthConstantFactor, p->mDepthClamp, p->mDepthSlopeFactor);
@@ -1073,7 +1090,8 @@ void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer) {
 		sizeof(XVector4f) * p->mPushConstantCount, p->mPushConstants);
 }
 void xGenImageCube(XTexture* texture, uint32_t w, uint32_t h, VkFormat f,
-	VkImageUsageFlags usage, VkSampleCountFlagBits sample_count, int mipmap) {
+	VkImageUsageFlags usage, VkSampleCountFlagBits sample_count, int mipmap)
+{
 	VkImageCreateInfo ici = {};
 	ici.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
 	ici.imageType = VK_IMAGE_TYPE_2D;
@@ -1098,9 +1116,11 @@ void xGenImageCube(XTexture* texture, uint32_t w, uint32_t h, VkFormat f,
 	vkAllocateMemory(GetVulkanDevice(), &mai, nullptr, &texture->memory);
 	vkBindImageMemory(GetVulkanDevice(), texture->image, texture->memory, 0);
 }
-void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixel) {
+void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixel)
+{
 	VkDeviceSize offset_unit = width * height;
-	if (texture->format == VK_FORMAT_R8G8B8A8_UNORM) {
+	if (texture->format == VK_FORMAT_R8G8B8A8_UNORM)
+	{
 		offset_unit *= 4;
 	}
 	int imagesize = offset_unit * 6;
@@ -1114,7 +1134,8 @@ void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixe
 	vkUnmapMemory(GetVulkanDevice(), tempmemory);
 
 	std::vector<VkBufferImageCopy> copies;
-	for (uint32_t face = 0; face < 6; ++face) {
+	for (uint32_t face = 0; face < 6; ++face)
+	{
 		VkBufferImageCopy copy = {};
 		copy.imageSubresource.aspectMask = texture->imageAspectFlags;
 		copy.imageSubresource.mipLevel = 0;
