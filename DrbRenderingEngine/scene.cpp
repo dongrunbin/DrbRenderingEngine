@@ -9,6 +9,7 @@
 #include "FullScreenQuad.h"
 #include "Ground.h"
 #include "Camera.h"
+#include "Model.h"
 
 Texture2D* texture;
 Material* testMaterial;
@@ -16,8 +17,11 @@ XFixedPipeline* testPipeline;
 Material* fsqMaterial;
 XFixedPipeline* fsqPipeline;
 FullScreenQuad* fsq;
+XFixedPipeline* groundPipeline;
+Material* groundMaterial;
 Ground* ground;
 Camera* camera;
+Model* sphere;
 void Init()
 {
 	camera = new Camera;
@@ -46,6 +50,7 @@ void Init()
 	// fsq
 	fsqMaterial = new Material;
 	fsqMaterial->Init("Res/fsq.vsb", "Res/fsq.fsb");
+	fsqMaterial->SetMVP(model, camera->GetViewMat(), projection);
 	fsqMaterial->SubmitUniformBuffers();
 	fsqPipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(fsqPipeline, 1);
@@ -61,9 +66,28 @@ void Init()
 	fsqMaterial->SetTexture(0, texture);
 	fsq->material = fsqMaterial;
 
+	//ground
+	groundMaterial = new Material;
+	groundMaterial->Init("Res/ground.vsb", "Res/ground.fsb");
+	groundMaterial->SetMVP(model, camera->GetViewMat(), projection);
+	groundMaterial->fragmentVector4UBO->SetVector4(0, 0.0f, 5.0f, 0.0f, 1.0f);
+	groundMaterial->fragmentVector4UBO->SetVector4(1, 1.0f, 1.0f, 1.0f, 1.0f);
+	groundMaterial->fragmentVector4UBO->SetVector4(2, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+	groundMaterial->SubmitUniformBuffers();
+	groundPipeline = new XFixedPipeline;
+	xSetColorAttachmentCount(groundPipeline, 1);
+	groundPipeline->mRenderPass = GetGlobalRenderPass();
+	groundMaterial->SetFixedPipeline(groundPipeline);
+	groundPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	groundPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	groundMaterial->Finish();
 	ground = new Ground();
 	ground->Init();
-	ground->SetMaterial(testMaterial);
+	ground->SetMaterial(groundMaterial);
+
+	sphere = new Model;
+	sphere->Init("Res/Sphere.raw");
+	sphere->SetMaterial(testMaterial);
 }
 void Draw(float deltaTime)
 {
@@ -71,6 +95,7 @@ void Draw(float deltaTime)
 
 	//fsq->Draw(commandbuffer);
 	ground->Draw(commandbuffer);
+	sphere->Draw(commandbuffer);
 	
 	xEndRendering();
 	xSwapBuffers(commandbuffer);
@@ -97,6 +122,10 @@ void OnQuit()
 	{
 		delete ground;
 	}
+	if (groundPipeline != nullptr)
+	{
+		delete groundPipeline;
+	}
 	if (fsq != nullptr)
 	{
 		delete fsq;
@@ -104,6 +133,10 @@ void OnQuit()
 	if (camera != nullptr)
 	{
 		delete camera;
+	}
+	if (sphere != nullptr)
+	{
+		delete sphere;
 	}
 	Material::CleanUp();
 	xVulkanCleanUp();

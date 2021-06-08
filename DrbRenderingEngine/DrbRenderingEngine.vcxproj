@@ -134,6 +134,7 @@
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="stb_image_aug.c" />
     <ClCompile Include="Texture2D.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Ground.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="stb_image_aug.h" />
     <ClInclude Include="Texture2D.h" />
@@ -156,10 +158,14 @@
     <ClInclude Include="VulkanAPI.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Res\fsq.fs" />
-    <None Include="Res\fsq.vs" />
-    <None Include="Res\test.fs" />
-    <None Include="Res\test.vs" />
+    <None Include="Res\fsq.frag" />
+    <None Include="Res\fsq.vert" />
+    <None Include="Res\ground.frag" />
+    <None Include="Res\ground.vert" />
+    <None Include="Res\sphere.frag" />
+    <None Include="Res\sphere.vert" />
+    <None Include="Res\test.frag" />
+    <None Include="Res\test.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
