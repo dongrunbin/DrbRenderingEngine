@@ -16,17 +16,19 @@ Texture2D* texture;
 TextureCube* skybox;
 Material* sphereMaterial;
 XFixedPipeline* spherePipeline;
+Material* groundMaterial;
+XFixedPipeline* groundPipeline;
 Material* depthrenderMaterial;
 XFixedPipeline* depthrenderPipeline;
 Material* fsqMaterial;
 XFixedPipeline* fsqPipeline;
 FullScreenQuad* fsq;
-XFixedPipeline* groundPipeline;
-Material* groundMaterial;
+
 Ground* ground;
 Camera* camera;
 Model* sphere;
 FrameBuffer* fbo;
+FrameBuffer* gbuffer;
 void Init()
 {
 	camera = new Camera;
@@ -46,9 +48,64 @@ void Init()
 	fbo->AttachDepthBuffer();
 	fbo->Finish();
 
+	gbuffer = new FrameBuffer;
+	gbuffer->SetSize(GetViewportWidth(), GetViewportHeight());
+	//要在gbuffer里存储世界坐标系里的position/normal/texcolor
+	gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
+	gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
+	gbuffer->AttachColorBuffer();
+	gbuffer->AttachDepthBuffer();
+	gbuffer->Finish();
+
 	xInitDefaultTexture();
 
-	// sphere
+	//// sphere
+	//sphereMaterial = new Material;
+	//sphereMaterial->Init("Res/sphere.vsb", "Res/sphere.fsb");
+	//sphereMaterial->SetMVP(model, camera->GetViewMat(), projection);
+	//sphereMaterial->fragmentVector4UBO->SetVector4(0, lightPos.x, lightPos.y, lightPos.z, 1.0f);
+	//sphereMaterial->fragmentVector4UBO->SetVector4(1, lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	//sphereMaterial->fragmentVector4UBO->SetVector4(2, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+	//sphereMaterial->SubmitUniformBuffers();
+	//spherePipeline = new XFixedPipeline;
+	//xSetColorAttachmentCount(spherePipeline, 1);
+	//spherePipeline->mRenderPass = GetGlobalRenderPass();
+	//sphereMaterial->SetFixedPipeline(spherePipeline);
+	//spherePipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	//spherePipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	//sphereMaterial->Finish();
+	//texture = new Texture2D;
+	//texture->SetImage("Res/test.bmp");
+	//skybox = new TextureCube;
+	//skybox->Init("");
+	//sphereMaterial->SetTexture(0, skybox);
+	//sphere = new Model;
+	//sphere->Init("Res/Sphere.raw");
+	//sphere->SetMaterial(sphereMaterial);
+
+	////ground
+	//groundMaterial = new Material;
+	//groundMaterial->Init("Res/ground.vsb", "Res/ground.fsb");
+	//groundMaterial->SetMVP(model, camera->GetViewMat(), projection);
+	//groundMaterial->fragmentVector4UBO->SetVector4(0, lightPos.x, lightPos.y, lightPos.z, 1.0f);
+	//groundMaterial->fragmentVector4UBO->SetVector4(1, lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	//groundMaterial->fragmentVector4UBO->SetVector4(2, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+	//groundMaterial->vertexMatrix4UBO->SetMatrix(4, projection);
+	//groundMaterial->vertexMatrix4UBO->SetMatrix(5, lightView);
+	//groundMaterial->SubmitUniformBuffers();
+	//groundPipeline = new XFixedPipeline;
+	//xSetColorAttachmentCount(groundPipeline, 1);
+	//groundPipeline->mRenderPass = GetGlobalRenderPass();
+	//groundMaterial->SetFixedPipeline(groundPipeline);
+	//groundPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	//groundPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	//groundMaterial->SetTexture(0, fbo->depthBuffer);
+	//groundMaterial->Finish();
+	//ground = new Ground();
+	//ground->Init();
+	//ground->SetMaterial(groundMaterial);
+
+	// sphere predeferred
 	sphereMaterial = new Material;
 	sphereMaterial->Init("Res/sphere.vsb", "Res/sphere.fsb");
 	sphereMaterial->SetMVP(model, camera->GetViewMat(), projection);
@@ -57,8 +114,8 @@ void Init()
 	sphereMaterial->fragmentVector4UBO->SetVector4(2, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
 	sphereMaterial->SubmitUniformBuffers();
 	spherePipeline = new XFixedPipeline;
-	xSetColorAttachmentCount(spherePipeline, 1);
-	spherePipeline->mRenderPass = GetGlobalRenderPass();
+	xSetColorAttachmentCount(spherePipeline, 3);
+	spherePipeline->mRenderPass = gbuffer->renderPass;
 	sphereMaterial->SetFixedPipeline(spherePipeline);
 	spherePipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
 	spherePipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
@@ -72,25 +129,7 @@ void Init()
 	sphere->Init("Res/Sphere.raw");
 	sphere->SetMaterial(sphereMaterial);
 
-	// fsq
-	fsqMaterial = new Material;
-	fsqMaterial->Init("Res/renderdepth.vsb", "Res/renderdepth.fsb");
-	fsqMaterial->SubmitUniformBuffers();
-	fsqPipeline = new XFixedPipeline;
-	xSetColorAttachmentCount(fsqPipeline, 1);
-	fsqPipeline->mRenderPass = GetGlobalRenderPass();
-	fsqMaterial->SetFixedPipeline(fsqPipeline);
-	fsqPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-	fsqPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
-	fsqPipeline->mInputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
-	fsqMaterial->Finish();
-	
-	fsq = new FullScreenQuad;
-	fsq->Init();
-	fsqMaterial->SetTexture(0, fbo->attachments[1]);
-	fsq->material = fsqMaterial;
-
-	//ground
+	//ground predeferred
 	groundMaterial = new Material;
 	groundMaterial->Init("Res/ground.vsb", "Res/ground.fsb");
 	groundMaterial->SetMVP(model, camera->GetViewMat(), projection);
@@ -101,8 +140,8 @@ void Init()
 	groundMaterial->vertexMatrix4UBO->SetMatrix(5, lightView);
 	groundMaterial->SubmitUniformBuffers();
 	groundPipeline = new XFixedPipeline;
-	xSetColorAttachmentCount(groundPipeline, 1);
-	groundPipeline->mRenderPass = GetGlobalRenderPass();
+	xSetColorAttachmentCount(groundPipeline, 3);
+	groundPipeline->mRenderPass = gbuffer->renderPass;
 	groundMaterial->SetFixedPipeline(groundPipeline);
 	groundPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
 	groundPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
@@ -111,6 +150,33 @@ void Init()
 	ground = new Ground();
 	ground->Init();
 	ground->SetMaterial(groundMaterial);
+
+	// fsq
+	fsqMaterial = new Material;
+	//fsqMaterial->Init("Res/renderdepth.vsb", "Res/renderdepth.fsb");
+	//fsqMaterial->Init("Res/fsq.vsb", "Res/fsq.fsb");
+	fsqMaterial->Init("Res/deferred.vsb", "Res/deferred.fsb");
+	fsqMaterial->fragmentVector4UBO->SetVector4(0, lightPos.x, lightPos.y, lightPos.z, 1.0f);
+	fsqMaterial->fragmentVector4UBO->SetVector4(1, lightColor.x, lightColor.y, lightColor.z, lightColor.w);
+	fsqMaterial->fragmentVector4UBO->SetVector4(2, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+	fsqMaterial->fragmentMatrix4UBO->SetMatrix(0, projection);
+	fsqMaterial->fragmentMatrix4UBO->SetMatrix(1, lightView);
+	fsqMaterial->SubmitUniformBuffers();
+	fsqPipeline = new XFixedPipeline;
+	xSetColorAttachmentCount(fsqPipeline, 1);
+	fsqPipeline->mRenderPass = GetGlobalRenderPass();
+	fsqMaterial->SetFixedPipeline(fsqPipeline);
+	fsqPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+	fsqPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	fsqPipeline->mInputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+	fsqMaterial->Finish();
+	fsq = new FullScreenQuad;
+	fsq->Init();
+	fsqMaterial->SetTexture(0, gbuffer->attachments[0]);
+	fsqMaterial->SetTexture(1, gbuffer->attachments[1]);
+	fsqMaterial->SetTexture(2, gbuffer->attachments[2]);
+	fsqMaterial->SetTexture(3, fbo->depthBuffer);
+	fsq->material = fsqMaterial;
 
 	//depth render
 	depthrenderMaterial = new Material;
@@ -127,6 +193,7 @@ void Init()
 }
 void Draw(float deltaTime)
 {
+	//depth pass
 	VkCommandBuffer commandbuffer = fbo->BeginRendering();
 	ground->SetMaterial(depthrenderMaterial);
 	sphere->SetMaterial(depthrenderMaterial);
@@ -135,13 +202,16 @@ void Draw(float deltaTime)
 	vkCmdEndRenderPass(commandbuffer);
 
 
-
-	xBeginRendering(commandbuffer);
-	//fsq->Draw(commandbuffer);
+	//gbuffer pass
+	gbuffer->BeginRendering(commandbuffer);
 	ground->SetMaterial(groundMaterial);
 	sphere->SetMaterial(sphereMaterial);
 	ground->Draw(commandbuffer);
 	sphere->Draw(commandbuffer);
+	vkCmdEndRenderPass(commandbuffer);
+	//lighting pass
+	xBeginRendering(commandbuffer);
+	fsq->Draw(commandbuffer);
 	xEndRendering();
 	xSwapBuffers(commandbuffer);
 }
@@ -190,6 +260,14 @@ void OnQuit()
 	if (skybox != nullptr)
 	{
 		delete skybox;
+	}
+	if (fbo != nullptr)
+	{
+		delete fbo;
+	}
+	if (gbuffer != nullptr)
+	{
+		delete gbuffer;
 	}
 	Material::CleanUp();
 	xVulkanCleanUp();

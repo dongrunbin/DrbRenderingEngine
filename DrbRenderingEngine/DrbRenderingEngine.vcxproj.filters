@@ -142,5 +142,11 @@
     <None Include="Res\renderdepth.vert">
       <Filter>Res</Filter>
     </None>
+    <None Include="Res\deferred.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\deferred.vert">
+      <Filter>Res</Filter>
+    </None>
   </ItemGroup>
 </Project>

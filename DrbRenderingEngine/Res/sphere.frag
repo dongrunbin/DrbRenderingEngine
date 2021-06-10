@@ -19,6 +19,8 @@ layout(push_constant) uniform AliceBuiltinConstants
 }U_Constants;
 layout(binding=4)uniform samplerCube U_Texture0;
 layout(location=0)out vec4 OutColor0;
+layout(location=1)out vec4 OutColor1;
+layout(location=2)out vec4 OutColor2;
 
 void main()
 {
@@ -35,5 +37,11 @@ void main()
 	vec3 eye = normalize(V_WorldPos - U_DefaultFragmentVectors.CameraPos.xyz);
 	vec3 r = reflect(eye, n);
 
+	//forward render
 	OutColor0=vec4(texture(U_Texture0, r).rgb * diffuse_color, 1.0);
+
+	//deferred render
+	OutColor0=vec4(V_WorldPos, 1.0);
+	OutColor1=vec4(n, 0.0);
+	OutColor2=texture(U_Texture0, r);
 }

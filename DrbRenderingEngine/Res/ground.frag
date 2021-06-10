@@ -22,6 +22,8 @@ layout(push_constant) uniform AliceBuiltinConstants
 
 layout(binding=4)uniform sampler2D U_Texture0;
 layout(location=0)out vec4 OutColor0;
+layout(location=1)out vec4 OutColor1;
+layout(location=2)out vec4 OutColor2;
 
 float GetShadow(vec4 shadow_coord, vec2 offset)
 {
@@ -68,5 +70,12 @@ void main()
 	l=normalize(l);
 	float diffuse_intensity=max(0.0,dot(l,n));
 	vec3 diffuse_color=U_DefaultFragmentVectors.LightColor.rgb*attenuation*diffuse_intensity;
-	OutColor0=V_Color * vec4(diffuse_color * vec3(CalculateShadow()), 1.0);
+
+	//forward render
+//	OutColor0=V_Color * vec4(diffuse_color * vec3(CalculateShadow()), 1.0);
+
+	//deferred render
+	OutColor0=vec4(V_WorldPos, 1.0);
+	OutColor1=vec4(n, 0.0);
+	OutColor2=V_Color;
 }

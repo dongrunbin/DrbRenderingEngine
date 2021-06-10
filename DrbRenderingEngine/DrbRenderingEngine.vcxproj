@@ -160,6 +160,8 @@
     <ClInclude Include="VulkanAPI.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Res\deferred.frag" />
+    <None Include="Res\deferred.vert" />
     <None Include="Res\depthrender.frag" />
     <None Include="Res\depthrender.vert" />
     <None Include="Res\fsq.frag" />
