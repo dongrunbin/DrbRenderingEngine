@@ -10,6 +10,7 @@ public:
 	void SetFilter(VkFilter min_filter, VkFilter mag_filter);
 	void SetWrapMode(VkSamplerAddressMode wrapu, VkSamplerAddressMode wrapv, VkSamplerAddressMode wrapw);
 };
+
 class TextureCube : public XTexture
 {
 public:

@@ -241,14 +241,17 @@ void xConfigUniformBuffer(XVulkanHandle param, int binding, XBufferObject* ubo, 
 
 void xGenImage(XTexture* texture, uint32_t w, uint32_t h, VkFormat format, VkImageUsageFlags usage, 
 	VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT, int mipmap = 1);
+void xGenImageCube(XTexture* texture, uint32_t w, uint32_t h, VkFormat f, VkImageUsageFlags usage,
+	VkSampleCountFlagBits sample_count = VK_SAMPLE_COUNT_1_BIT, int mipmap = 1);
 
 //像素数据从CPU拷贝到GPU
 void xSubmitImage2D(XTexture* texture, int width, int height, const void* pixel);
-
+void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixel);
 void xSetImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout,
 	VkImageSubresourceRange range, VkPipelineStageFlags src = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT, VkPipelineStageFlags dst = VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
 
 void xGenImageView2D(XTexture* texture, int mipmap = 1);
+void xGenImageViewCube(XTexture* texture, int mipmap = 1);
 void xGenSampler(XTexture* texture);
 void xInitDefaultTexture();
 void xVulkanCleanUp();

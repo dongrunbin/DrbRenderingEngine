@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="BVulkan.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FullScreenQuad.cpp" />
     <ClCompile Include="Ground.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="BVulkan.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FullScreenQuad.h" />
     <ClInclude Include="Ground.h" />
     <ClInclude Include="IndexBuffer.h" />
@@ -158,10 +160,14 @@
     <ClInclude Include="VulkanAPI.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Res\depthrender.frag" />
+    <None Include="Res\depthrender.vert" />
     <None Include="Res\fsq.frag" />
     <None Include="Res\fsq.vert" />
     <None Include="Res\ground.frag" />
     <None Include="Res\ground.vert" />
+    <None Include="Res\renderdepth.frag" />
+    <None Include="Res\renderdepth.vert" />
     <None Include="Res\sphere.frag" />
     <None Include="Res\sphere.vert" />
     <None Include="Res\test.frag" />

@@ -1162,7 +1162,8 @@ void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixe
 	vkDestroyBuffer(GetVulkanDevice(), tempbuffer, nullptr);
 	vkFreeMemory(GetVulkanDevice(), tempmemory, nullptr);
 }
-void xGenImageViewCube(XTexture* texture, int mipmap /* = 1 */) {
+void xGenImageViewCube(XTexture* texture, int mipmap)
+{
 	VkImageViewCreateInfo ivci = {};
 	ivci.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
 	ivci.image = texture->image;
