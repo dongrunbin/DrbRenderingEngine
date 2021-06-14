@@ -70,6 +70,7 @@ enum XUniformBufferType
 	XUniformBufferTypeMatrix,
 	XUniformBufferTypeVector,
 	XUniformBufferTypeCount,
+	XUniformBufferTypeCustom,
 };
 
 struct XUniformBuffer

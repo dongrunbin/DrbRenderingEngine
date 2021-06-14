@@ -2,23 +2,13 @@
 layout(location=0)in vec4 V_Color;
 layout(location=1)in vec4 V_Texcoord;
 
-layout(binding=2)uniform AliceBuiltinFragmentVectors
+layout(binding=4)uniform Light
 {
-	vec4 LightPos;
-	vec4 LightColor;
-	vec4 CameraPos;
-}U_DefaultFragmentVectors;
-
-layout(binding=3)uniform AliceBuiltinFragmentMatrix
-{
-	mat4 LightProjection;
-	mat4 LightView;
-}U_DefaultFragmentMatrices;
-
-layout(push_constant) uniform AliceBuiltinConstants
-{
-	vec4 Params[8];
-}U_Constants;
+	vec4 pos;
+	vec4 color;
+	mat4 projection;
+	mat4 view;
+} U_Lights[];
 
 const mat4 offset = mat4(
 		0.5, 0.0, 0.0, 0.0,
@@ -26,12 +16,13 @@ const mat4 offset = mat4(
 		0.0, 0.0, 1.0, 0.0,
 		0.5, 0.5, 0.0, 1.0);
 
-layout(binding=4)uniform sampler2D U_Texture0; // WorldPos
-layout(binding=5)uniform sampler2D U_Texture1; // Normal
-layout(binding=6)uniform sampler2D U_Texture2; // Color / Texture
-layout(binding=7)uniform sampler2D U_Texture3; // Depth buffer
+layout(binding=5)uniform sampler2D U_Texture0; // WorldPos
+layout(binding=6)uniform sampler2D U_Texture1; // Normal
+layout(binding=7)uniform sampler2D U_Texture2; // Color / Texture
+layout(binding=8)uniform sampler2D U_Texture3; // Depth buffer
 
 layout(location=0)out vec4 OutColor0;
+
 
 float GetShadow(vec4 shadow_coord, vec2 offset)
 {
@@ -74,9 +65,9 @@ void main()
 	vec4 normal = texture(U_Texture1,vec2(V_Texcoord.x, 1 - V_Texcoord.y));
 	vec4 color = texture(U_Texture2,vec2(V_Texcoord.x, 1 - V_Texcoord.y));
 
-	vec4 lightSpacePos = offset * U_DefaultFragmentMatrices.LightProjection * U_DefaultFragmentMatrices.LightView * worldPos;
+	vec4 lightSpacePos = offset * U_Lights[0].projection * U_Lights[0].view * worldPos;
 	vec3 n = normal.xyz;
-	vec3 light_pos = U_DefaultFragmentVectors.LightPos.xyz;
+	vec3 light_pos = U_Lights[0].pos.xyz;
 	vec3 l = light_pos - worldPos.xyz;
 	float distance_from_light = length(l);
 	float attenuation = 1.0 / (1.0 + distance_from_light * 0.5);

@@ -104,6 +104,9 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\ground.frag">

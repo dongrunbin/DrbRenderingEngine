@@ -7,7 +7,6 @@
 #include <set>
 #include <map>
 #include <algorithm>
-typedef uint64_t GLuint;
 typedef void* AVulkanHandle;
 struct Vector4f {
 	float v[4];

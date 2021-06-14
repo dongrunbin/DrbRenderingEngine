@@ -14,7 +14,11 @@ int UniformBuffer::GetSize()
 	{
 		return sizeof(XMatrix4x4f) * matrices.size();
 	}
-	return sizeof(XVector4f) * vectors.size();
+	else if (uniformBufferType == XUniformBufferTypeVector)
+	{
+		return sizeof(XVector4f) * vectors.size();
+	}
+	return size;
 }
 void UniformBuffer::SetSize(int count)
 {
@@ -22,11 +26,19 @@ void UniformBuffer::SetSize(int count)
 	{
 		matrices.resize(count);
 	}
-	else
+	else if (uniformBufferType == XUniformBufferTypeVector)
 	{
 		vectors.resize(count);
 	}
+	else
+	{
+		this->size = count;
+	}
 	XBufferObject::OnSetSize();
+}
+void UniformBuffer::SetData(void* data)
+{
+	this->data = data;
 }
 void UniformBuffer::SubmitData()
 {
@@ -34,9 +46,13 @@ void UniformBuffer::SubmitData()
 	{
 		XBufferObject::SubmitData(matrices.data(), GetSize());
 	}
-	else
+	else if (uniformBufferType == XUniformBufferTypeVector)
 	{
 		XBufferObject::SubmitData(vectors.data(), GetSize());
+	}
+	else
+	{
+		XBufferObject::SubmitData(this->data, GetSize());
 	}
 }
 void UniformBuffer::SetMatrix(int location, const glm::mat4& m)
