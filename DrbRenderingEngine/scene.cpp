@@ -20,8 +20,8 @@ Material* sphereMaterial;
 XFixedPipeline* spherePipeline;
 Material* groundMaterial;
 XFixedPipeline* groundPipeline;
-Material* depthrenderMaterial;
-XFixedPipeline* depthrenderPipeline;
+Material** depthrenderMaterials;
+XFixedPipeline** depthrenderPipelines;
 Material* fsqMaterial;
 XFixedPipeline* fsqPipeline;
 FullScreenQuad* fsq;
@@ -29,7 +29,7 @@ FullScreenQuad* fsq;
 Ground* ground;
 Camera* camera;
 Model* sphere;
-FrameBuffer* fbo;
+FrameBuffer* fbos;
 FrameBuffer* gbuffer;
 
 float moveSpeed = 0.4f;
@@ -38,6 +38,7 @@ glm::mat4 model(1.0);
 glm::mat4 projection;
 
 Light* lights;
+const int LIGHT_COUNT = 2;
 //mutiple threading
 //VkCommandBuffer* drawcommands;
 //static float time_since_time = 0.0f;
@@ -50,21 +51,26 @@ void Init()
 	projection = glm::perspective(45.0f, float(GetViewportWidth()) / float(GetViewportHeight()), 0.1f, 100.0f);
 	projection[1][1] *= -1.0f;
 
-	lights = new Light[3];
+	lights = new Light[LIGHT_COUNT];
 	lights[0].pos = glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
 	lights[0].color = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
 	lights[0].view = glm::lookAt(glm::vec3(lights[0].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	lights[0].projection = projection;
-	lights[1].pos = glm::vec4(0.0f, 5.0f, 5.0f, 1.0f);
+	lights[1].pos = glm::vec4(0.0f, 2.0f, 5.0f, 1.0f);
 	lights[1].color = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
 	lights[1].view = glm::lookAt(glm::vec3(lights[1].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	lights[1].projection = projection;
 	int a = sizeof(glm::mat4);
-	fbo = new FrameBuffer;
-	fbo->SetSize(GetViewportWidth(), GetViewportHeight());
-	fbo->AttachColorBuffer();
-	fbo->AttachDepthBuffer();
-	fbo->Finish();
+	fbos = new FrameBuffer[LIGHT_COUNT];
+	for (int i = 0; i < LIGHT_COUNT; ++i)
+	{
+		FrameBuffer* fbo = &fbos[i];
+		fbo->SetSize(GetViewportWidth(), GetViewportHeight());
+		fbo->AttachColorBuffer();
+		fbo->AttachDepthBuffer();
+		fbo->Finish();
+	}
+
 
 	gbuffer = new FrameBuffer;
 	gbuffer->SetSize(GetViewportWidth(), GetViewportHeight());
@@ -87,7 +93,7 @@ void Init()
 	sphereMaterial->Init("Res/sphere.vsb", "Res/sphere.fsb");
 	sphereMaterial->SetMVP(model, camera->GetViewMat(), projection);
 	sphereMaterial->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-	sphereMaterial->SetUniformBuffer(4, lights, 3 * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
+	sphereMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
 	sphereMaterial->SetTexture(5, skybox);
 	sphereMaterial->SubmitUniformBuffers();
 	spherePipeline = new XFixedPipeline;
@@ -106,8 +112,8 @@ void Init()
 	groundMaterial->Init("Res/ground.vsb", "Res/ground.fsb");
 	groundMaterial->SetMVP(model, camera->GetViewMat(), projection);
 	groundMaterial->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-	groundMaterial->SetUniformBuffer(4, lights, 3 * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
-	groundMaterial->SetTexture(5, fbo->depthBuffer);
+	groundMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
+	//groundMaterial->SetTexture(5, fbo->depthBuffer);
 	groundMaterial->SubmitUniformBuffers();
 	groundPipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(groundPipeline, 3);
@@ -125,11 +131,13 @@ void Init()
 	//fsqMaterial->Init("Res/renderdepth.vsb", "Res/renderdepth.fsb");
 	//fsqMaterial->Init("Res/fsq.vsb", "Res/fsq.fsb");
 	fsqMaterial->Init("Res/deferred.vsb", "Res/deferred.fsb");
-	fsqMaterial->SetUniformBuffer(4, lights, 3 * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
+	fsqMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
 	fsqMaterial->SetTexture(5, gbuffer->attachments[0]);
 	fsqMaterial->SetTexture(6, gbuffer->attachments[1]);
 	fsqMaterial->SetTexture(7, gbuffer->attachments[2]);
-	fsqMaterial->SetTexture(8, fbo->depthBuffer);
+	fsqMaterial->SetTexture(8, (&fbos[0])->depthBuffer);
+	fsqMaterial->SetTexture(9, (&fbos[1])->depthBuffer);
+	//fsqMaterial->SetTexture(10, (&fbos[2])->depthBuffer);
 	fsqMaterial->SubmitUniformBuffers();
 	fsqPipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(fsqPipeline, 1);
@@ -144,17 +152,26 @@ void Init()
 	fsq->material = fsqMaterial;
 
 	//depth render
-	depthrenderMaterial = new Material;
-	depthrenderMaterial->Init("Res/depthrender.vsb", "Res/depthrender.fsb");
-	depthrenderMaterial->SetMVP(model, lights[0].view, projection);
-	depthrenderPipeline = new XFixedPipeline;
-	xSetColorAttachmentCount(depthrenderPipeline, 1);
-	depthrenderPipeline->mRenderPass = fbo->renderPass;
-	depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
-	depthrenderPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-	depthrenderPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
-	depthrenderMaterial->Finish();
+	depthrenderMaterials = new Material*[LIGHT_COUNT];
+	depthrenderPipelines = new XFixedPipeline*[LIGHT_COUNT];
+	for (int i = 0; i < LIGHT_COUNT; ++i)
+	{
+		Material* depthrenderMaterial = new Material;
+		depthrenderMaterials[i] = depthrenderMaterial;
+		XFixedPipeline* depthrenderPipeline = new XFixedPipeline;
+		depthrenderPipelines[i] = depthrenderPipeline;
+		depthrenderMaterial->Init("Res/depthrender.vsb", "Res/depthrender.fsb");
+		depthrenderMaterial->SetMVP(model, lights[i].view, projection);
+		depthrenderPipeline = new XFixedPipeline;
+		xSetColorAttachmentCount(depthrenderPipeline, 1);
+		depthrenderPipeline->mRenderPass = (&fbos[i])->renderPass;
+		depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
+		depthrenderPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
+		depthrenderPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+		depthrenderMaterial->Finish();
 		depthrenderMaterial->SubmitUniformBuffers();
+	}
+
 
 
 	//mutiple threading
@@ -203,22 +220,37 @@ void Draw(float deltaTime)
 {
 	for (auto it = Material::sMaterials.begin(); it != Material::sMaterials.end(); it++)
 	{
-		if ((*it) == depthrenderMaterial)
+		bool isDepthRender = false;;
+		for (int i = 0; i < LIGHT_COUNT; ++i)
+		{
+			if ((*it) == depthrenderMaterials[i])
+			{
+				isDepthRender = true;
+				break;
+			}
+		}
+		if (isDepthRender)
 		{
 			continue;
 		}
+
 		(*it)->SetMVP(model, camera->GetViewMat(), projection);
 		(*it)->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
 		(*it)->SubmitUniformBuffers();
 	}
 
 	////depth pass
-	VkCommandBuffer commandbuffer = fbo->BeginRendering();
-	ground->SetMaterial(depthrenderMaterial);
-	sphere->SetMaterial(depthrenderMaterial);
-	ground->Draw(commandbuffer);
-	sphere->Draw(commandbuffer);
-	vkCmdEndRenderPass(commandbuffer);
+	VkCommandBuffer commandbuffer = 0;
+	for (int i = 0; i < LIGHT_COUNT; ++i)
+	{
+		commandbuffer = (&fbos[i])->BeginRendering(commandbuffer);
+		ground->SetMaterial(depthrenderMaterials[i]);
+		sphere->SetMaterial(depthrenderMaterials[i]);
+		ground->Draw(commandbuffer);
+		sphere->Draw(commandbuffer);
+		vkCmdEndRenderPass(commandbuffer);
+	}
+
 	//gbuffer pass
 	gbuffer->BeginRendering(commandbuffer);
 	ground->SetMaterial(groundMaterial);
@@ -308,9 +340,9 @@ void OnQuit()
 	{
 		delete fsqPipeline;
 	}
-	if (depthrenderPipeline != nullptr)
+	if (depthrenderPipelines != nullptr)
 	{
-		delete depthrenderPipeline;
+		delete[] depthrenderPipelines;
 	}
 	if (texture != nullptr)
 	{
@@ -340,9 +372,9 @@ void OnQuit()
 	{
 		delete skybox;
 	}
-	if (fbo != nullptr)
+	if (fbos != nullptr)
 	{
-		delete fbo;
+		delete[] fbos;
 	}
 	if (gbuffer != nullptr)
 	{

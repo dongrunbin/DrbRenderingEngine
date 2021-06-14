@@ -592,6 +592,7 @@ void xConfigUniformBuffer(XVulkanHandle param, int binding, XBufferObject* ubo, 
 	poolSize.descriptorCount = 1;
 	poolSize.type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	program->descriptorPoolSize.push_back(poolSize);
+
 	VkDescriptorBufferInfo* bufferInfo = new VkDescriptorBufferInfo;
 	bufferInfo->offset = 0;
 	bufferInfo->buffer = ubo->buffer;
