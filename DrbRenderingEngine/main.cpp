@@ -1,5 +1,5 @@
 #include <windows.h>
-#include "BVulkan.h"
+#include "VulkanAPI.h"
 #include "scene.h"
 #pragma comment(lib,"winmm.lib")
 
@@ -7,7 +7,7 @@ int mousePosX, mousePosY;
 POINT originalMousePos;
 bool rotateView = false;
 
-LRESULT CALLBACK LearnWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK EngineWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	switch (message)
 	{
@@ -59,7 +59,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	wndclassex.hIcon = nullptr;
 	wndclassex.hIconSm = nullptr;
 	wndclassex.hInstance = hInstance;
-	wndclassex.lpfnWndProc = LearnWindowProc;
+	wndclassex.lpfnWndProc = EngineWindowProc;
 	wndclassex.lpszMenuName = nullptr;
 	wndclassex.lpszClassName = L"DrbRenderingEngine";
 	wndclassex.style = CS_VREDRAW | CS_HREDRAW;
@@ -74,7 +74,7 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 	HWND hwnd = CreateWindowEx(NULL, L"DrbRenderingEngine", L"DrbRenderingEngine", WS_OVERLAPPEDWINDOW, 
 		0, 0, rect.right-rect.left, rect.bottom-rect.top,
 		nullptr, nullptr, hInstance, nullptr);
-	InitVulkan(hwnd, 1280, 720);
+	xInitVulkan(hwnd, 1280, 720);
 	Init();
 	ShowWindow(hwnd, SW_SHOW);
 	UpdateWindow(hwnd);
@@ -95,8 +95,8 @@ INT WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _
 		float deltaTime = current_time - last_time;
 		last_time = current_time;
 		Draw(deltaTime);
+		//printf("fps:%d\n", (int)(1 / deltaTime));
 	}
 	OnQuit();
-	VulkanCleanUp();
 	return 0;
 }

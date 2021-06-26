@@ -87,30 +87,30 @@ struct XUniformBuffer
 struct XFixedPipeline
 {
 	//渲染管线状态
-	VkPipeline mPipeline;
+	VkPipeline pipeline;
 	//负责shader的输入输出
-	VkPipelineLayout mPipelineLayout;
-	VkDescriptorSetLayout* mDescriptorSetLayout;
-	VkPipelineShaderStageCreateInfo* mShaderStages;
-	int mShaderStageCount, mDescriptorSetLayoutCount;
-	VkRenderPass mRenderPass;
+	VkPipelineLayout pipelineLayout;
+	VkDescriptorSetLayout* descriptorSetLayout;
+	VkPipelineShaderStageCreateInfo* shaderStages;
+	int shaderStageCount, descriptorSetLayoutCount;
+	VkRenderPass renderPass;
 	//是否MSAA
-	VkSampleCountFlagBits mSampleCount;
+	VkSampleCountFlagBits sampleCount;
 	//输入的图元
-	VkPipelineInputAssemblyStateCreateInfo mInputAssetmlyState;
-	VkPipelineViewportStateCreateInfo mViewportState;
-	VkViewport mViewport;
-	VkRect2D mScissor;
+	VkPipelineInputAssemblyStateCreateInfo inputAssetmlyState;
+	VkPipelineViewportStateCreateInfo viewportState;
+	VkViewport viewport;
+	VkRect2D scissor;
 	//线框模式/填充模式
-	VkPipelineRasterizationStateCreateInfo mRasterizer;
-	VkPipelineDepthStencilStateCreateInfo mDepthStencilState;
-	VkPipelineMultisampleStateCreateInfo mMultisampleState;
-	std::vector<VkPipelineColorBlendAttachmentState> mColorBlendAttachmentStates;
-	VkPipelineColorBlendStateCreateInfo mColorBlendState;
-	XVector4f mPushConstants[16];
-	int mPushConstantCount;
-	VkShaderStageFlags mPushConstantShaderStage;
-	float mDepthConstantFactor, mDepthClamp, mDepthSlopeFactor;
+	VkPipelineRasterizationStateCreateInfo rasterizer;
+	VkPipelineDepthStencilStateCreateInfo depthStencilState;
+	VkPipelineMultisampleStateCreateInfo multisampleState;
+	std::vector<VkPipelineColorBlendAttachmentState> colorBlendAttachmentStates;
+	VkPipelineColorBlendStateCreateInfo colorBlendState;
+	XVector4f pushConstants[16];
+	int pushConstantCount;
+	VkShaderStageFlags pushConstantShaderStage;
+	float depthConstantFactor, depthClamp, depthSlopeFactor;
 	XFixedPipeline();
 	~XFixedPipeline();
 	void CleanUp();
@@ -157,6 +157,18 @@ struct XTexture
 	float maxAnisotropy;
 	XTexture(VkImageAspectFlags imageAspect = VK_IMAGE_ASPECT_COLOR_BIT);
 	~XTexture();
+};
+
+struct XSystemFrameBuffer
+{
+	VkFramebuffer framebuffer;
+	VkImageView colorbuffer;
+	VkImageView depthbuffer;
+	//for MSAA
+	VkImageView resolvebuffer;
+	VkSampleCountFlagBits sampleCount;
+	XSystemFrameBuffer();
+	~XSystemFrameBuffer();
 };
 
 /// <summary>
@@ -253,6 +265,7 @@ void xSetImageLayout(VkCommandBuffer commandBuffer, VkImage image, VkImageLayout
 
 void xGenImageView2D(XTexture* texture, int mipmap = 1);
 void xGenImageViewCube(XTexture* texture, int mipmap = 1);
+//for post processing
 void xGenSampler(XTexture* texture);
 void xInitDefaultTexture();
 void xVulkanCleanUp();
@@ -295,6 +308,51 @@ void xInitPipelineLayout(XFixedPipeline* p);
 void xCreateFixedPipeline(XFixedPipeline* p);
 void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer);
 
+//system fbo
+void xInitSystemFrameBuffer();
+XVulkanHandle xGetSystemFrameBuffer(int index);
+int xGetSystemFrameBufferCount();
+void xViewport(int width, int height);
+VkRenderPass xGetGlobalRenderPass();
+
+//=====command pool and semaphore
+//command pool is for generating command buffers
+//semaphore is for synchronous operations
+VkRenderPass xGetGlobalRenderPass();
+void xInitCommandPool();
+VkCommandPool xGetCommandPool();
+void xInitSemaphores();
+//是否准备好被绘制
+VkSemaphore xGetReadyToRenderSemaphore();
+//是否准备好被显示
+VkSemaphore xGetReadyToPresentSemaphore();
+
+//=====swap chain
+void xInitSwapChain();
+VkSwapchainKHR xGetSwapChain();
+VkFormat xGetSwapChainImageFormat();
+
+//logical device
+void xInitVulkanDevice();
+VkDevice xGetVulkanDevice();
+VkQueue xGetGraphicQueue();
+VkQueue xGetPresentQueue();
+
+//physical device
+void xInitVulkanPhysicalDevice();
+VkPhysicalDevice xGetVulkanPhysicalDevice();
+int xGetGraphicQueueFamily();
+int xGetPresentQueueFamily();
+VkSampleCountFlagBits xGetMaxMSAASampleCount();
+
+//Vulkan Engine
+void xInitVulkan(void* param, int width, int height);
+int xGetViewportWidth();
+int xGetViewportHeight();
+VkSampleCountFlagBits xGetGlobalFrameBufferSampleCount();
+VkFramebuffer xAquireRenderTarget();
+uint32_t xGetCurrenRenderTargetIndex();
+
 // 生成VBO显存缓冲区
 #define xGenVertexBuffer(size, buffer, memory) \
 	xGenBuffer(buffer, memory, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -305,3 +363,5 @@ void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer);
 	xBufferSubData(buffer, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, data, size);
 #define xBufferSubIndexData(buffer, data, size) \
 	xBufferSubData(buffer, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, data, size);
+
+unsigned char* LoadFileContent(const char* path, int& filesize);

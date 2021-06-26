@@ -128,7 +128,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="BVulkan.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FullScreenQuad.cpp" />
@@ -145,7 +144,6 @@
     <ClCompile Include="VulkanAPI.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BVulkan.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FullScreenQuad.h" />

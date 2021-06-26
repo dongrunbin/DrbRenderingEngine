@@ -1,5 +1,4 @@
 #include "FrameBuffer.h"
-#include "BVulkan.h"
 
 FrameBuffer::FrameBuffer()
 {
@@ -15,10 +14,10 @@ FrameBuffer::~FrameBuffer()
 		delete* iter;
 	}
 	if (renderPass != 0) {
-		vkDestroyRenderPass(GetVulkanDevice(), renderPass, nullptr);
+		vkDestroyRenderPass(xGetVulkanDevice(), renderPass, nullptr);
 	}
 	if (fbo != 0) {
-		vkDestroyFramebuffer(GetVulkanDevice(), fbo, nullptr);
+		vkDestroyFramebuffer(xGetVulkanDevice(), fbo, nullptr);
 	}
 }
 
@@ -137,7 +136,7 @@ void FrameBuffer::Finish()
 	rpci.pAttachments = attachments.data();
 	rpci.subpassCount = 1;
 	rpci.pSubpasses = &subpasses;
-	vkCreateRenderPass(GetVulkanDevice(), &rpci, nullptr, &renderPass);
+	vkCreateRenderPass(xGetVulkanDevice(), &rpci, nullptr, &renderPass);
 	VkFramebufferCreateInfo fbci = {};
 	fbci.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 	fbci.pAttachments = render_targets.data();
@@ -146,7 +145,7 @@ void FrameBuffer::Finish()
 	fbci.height = height;
 	fbci.layers = 1;
 	fbci.renderPass = renderPass;
-	vkCreateFramebuffer(GetVulkanDevice(), &fbci, nullptr, &fbo);
+	vkCreateFramebuffer(xGetVulkanDevice(), &fbci, nullptr, &fbo);
 }
 
 void FrameBuffer::SetClearColor(int index, float r, float g, float b, float a)
@@ -178,7 +177,7 @@ VkCommandBuffer FrameBuffer::BeginRendering(VkCommandBuffer commandbuffer)
 	rpbi.framebuffer = render_target;
 	rpbi.renderPass = render_pass;
 	rpbi.renderArea.offset = { 0,0 };
-	rpbi.renderArea.extent = { uint32_t(GetViewportWidth()),uint32_t(GetViewportHeight()) };
+	rpbi.renderArea.extent = { uint32_t(xGetViewportWidth()),uint32_t(xGetViewportHeight()) };
 	rpbi.clearValueCount = clearValues.size();
 	rpbi.pClearValues = clearValues.data();
 	vkCmdBeginRenderPass(cmd, &rpbi, VK_SUBPASS_CONTENTS_INLINE);

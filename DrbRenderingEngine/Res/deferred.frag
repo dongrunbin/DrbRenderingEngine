@@ -76,9 +76,9 @@ float CalculateShadow(vec4 lightSpacePos, int lightIndex)
 
 	float shadow = 0.0;
 	int count = 0;
-	for(int y = -1; y < 1; ++y)
+	for(int y = -3; y <= 3; ++y)
 	{
-		for(int x = -1; x < 1; ++x)
+		for(int x = -3; x <= 3; ++x)
 		{
 			shadow += GetShadow(perspective_devide_coord, vec2(dx * x, dy * y), lightIndex);
 			++count;
@@ -98,7 +98,7 @@ vec4 CalculateLight(int lightIndex, vec4 worldPos, vec4 normal, vec4 color)
 	float attenuation = 1.0 / (1.0 + distance_from_light * 0.5);
 	l = normalize(l);
 	float diffuse_intensity = max(0.0,dot(l,n));
-	vec3 diffuse_color = color.rgb * attenuation * diffuse_intensity * 10;
+	vec3 diffuse_color = color.rgb * U_Lights.light[lightIndex].color.rgb * attenuation * diffuse_intensity * 10;
 	vec4 outColor = vec4(diffuse_color * vec3(CalculateShadow(lightSpacePos, lightIndex)), 1.0);
 	return outColor;
 }

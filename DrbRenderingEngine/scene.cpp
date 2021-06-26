@@ -1,4 +1,3 @@
-#include "BVulkan.h"
 #include "scene.h"
 #include "VulkanAPI.h"
 #include "VertexBuffer.h"
@@ -48,16 +47,16 @@ void Init()
 	camera = new Camera;
 	camera->cameraPos = glm::vec3(0.0f, 5.0f, -15.0f);
 	camera->Pitch(25.0f);
-	projection = glm::perspective(45.0f, float(GetViewportWidth()) / float(GetViewportHeight()), 0.1f, 100.0f);
+	projection = glm::perspective(45.0f, float(xGetViewportWidth()) / float(xGetViewportHeight()), 0.1f, 100.0f);
 	projection[1][1] *= -1.0f;
 
 	lights = new Light[LIGHT_COUNT];
 	lights[0].pos = glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
-	lights[0].color = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
+	lights[0].color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	lights[0].view = glm::lookAt(glm::vec3(lights[0].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	lights[0].projection = projection;
 	lights[1].pos = glm::vec4(0.0f, 2.0f, 5.0f, 1.0f);
-	lights[1].color = glm::vec4(10.0f, 10.0f, 10.0f, 1.0f);
+	lights[1].color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	lights[1].view = glm::lookAt(glm::vec3(lights[1].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
 	lights[1].projection = projection;
 	int a = sizeof(glm::mat4);
@@ -65,7 +64,7 @@ void Init()
 	for (int i = 0; i < LIGHT_COUNT; ++i)
 	{
 		FrameBuffer* fbo = &fbos[i];
-		fbo->SetSize(GetViewportWidth(), GetViewportHeight());
+		fbo->SetSize(xGetViewportWidth(), xGetViewportHeight());
 		fbo->AttachColorBuffer();
 		fbo->AttachDepthBuffer();
 		fbo->Finish();
@@ -73,7 +72,7 @@ void Init()
 
 
 	gbuffer = new FrameBuffer;
-	gbuffer->SetSize(GetViewportWidth(), GetViewportHeight());
+	gbuffer->SetSize(xGetViewportWidth(), xGetViewportHeight());
 	//要在gbuffer里存储世界坐标系里的position/normal/texcolor
 	gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
 	gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
@@ -98,10 +97,10 @@ void Init()
 	sphereMaterial->SubmitUniformBuffers();
 	spherePipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(spherePipeline, 3);
-	spherePipeline->mRenderPass = gbuffer->renderPass;
+	spherePipeline->renderPass = gbuffer->renderPass;
 	sphereMaterial->SetFixedPipeline(spherePipeline);
-	spherePipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-	spherePipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	spherePipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
+	spherePipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
 	sphereMaterial->Finish();
 	sphere = new Model;
 	sphere->Init("Res/Sphere.raw");
@@ -117,10 +116,10 @@ void Init()
 	groundMaterial->SubmitUniformBuffers();
 	groundPipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(groundPipeline, 3);
-	groundPipeline->mRenderPass = gbuffer->renderPass;
+	groundPipeline->renderPass = gbuffer->renderPass;
 	groundMaterial->SetFixedPipeline(groundPipeline);
-	groundPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-	groundPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+	groundPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
+	groundPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
 	groundMaterial->Finish();
 	ground = new Ground();
 	ground->Init();
@@ -141,11 +140,11 @@ void Init()
 	fsqMaterial->SubmitUniformBuffers();
 	fsqPipeline = new XFixedPipeline;
 	xSetColorAttachmentCount(fsqPipeline, 1);
-	fsqPipeline->mRenderPass = GetGlobalRenderPass();
+	fsqPipeline->renderPass = xGetGlobalRenderPass();
 	fsqMaterial->SetFixedPipeline(fsqPipeline);
-	fsqPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-	fsqPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
-	fsqPipeline->mInputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+	fsqPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
+	fsqPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
+	fsqPipeline->inputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 	fsqMaterial->Finish();
 	fsq = new FullScreenQuad;
 	fsq->Init();
@@ -164,10 +163,10 @@ void Init()
 		depthrenderMaterial->SetMVP(model, lights[i].view, projection);
 		depthrenderPipeline = new XFixedPipeline;
 		xSetColorAttachmentCount(depthrenderPipeline, 1);
-		depthrenderPipeline->mRenderPass = (&fbos[i])->renderPass;
+		depthrenderPipeline->renderPass = (&fbos[i])->renderPass;
 		depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
-		depthrenderPipeline->mViewport = { 0.0f, 0.0f, float(GetViewportWidth()), float(GetViewportHeight()), 0.0f, 1.0f };
-		depthrenderPipeline->mScissor = { {0, 0}, { uint32_t(GetViewportWidth()), uint32_t(GetViewportHeight()) } };
+		depthrenderPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
+		depthrenderPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
 		depthrenderMaterial->Finish();
 		depthrenderMaterial->SubmitUniformBuffers();
 	}
@@ -295,7 +294,7 @@ void Draw(float deltaTime)
 }
 void OnViewportChanged(int width, int height)
 {
-	aViewport(width, height);
+	xViewport(width, height);
 }
 
 void OnKeyboard(unsigned char key)

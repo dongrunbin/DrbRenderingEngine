@@ -21,10 +21,10 @@ void FullScreenQuad::Draw(VkCommandBuffer commandbuffer) {
 	VkBuffer vertexbuffers[] = { vertexBuffer->buffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		material->fixedPipeline->mPipeline);
+		material->fixedPipeline->pipeline);
 	vkCmdBindVertexBuffers(commandbuffer, 0, 1, vertexbuffers, offsets);
 	vkCmdBindDescriptorSets(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		material->fixedPipeline->mPipelineLayout, 0, 1, &material->program.descriptorSet,
+		material->fixedPipeline->pipelineLayout, 0, 1, &material->program.descriptorSet,
 		0, nullptr);
 	vkCmdDraw(commandbuffer, 4, 1, 0, 0);
 }

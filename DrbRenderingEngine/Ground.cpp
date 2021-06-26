@@ -49,11 +49,11 @@ void Ground::Draw(VkCommandBuffer commandbuffer) {
 	VkBuffer vertexbuffers[] = { vertexBuffer->buffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		material->fixedPipeline->mPipeline);
+		material->fixedPipeline->pipeline);
 	vkCmdBindVertexBuffers(commandbuffer, 0, 1, vertexbuffers, offsets);
 	vkCmdBindIndexBuffer(commandbuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
 	vkCmdBindDescriptorSets(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		material->fixedPipeline->mPipelineLayout, 0, 1, &material->program.descriptorSet,
+		material->fixedPipeline->pipelineLayout, 0, 1, &material->program.descriptorSet,
 		0, nullptr);
 	vkCmdDrawIndexed(commandbuffer, indexBuffer->indexCount, 1, 0, 0, 0);
 }

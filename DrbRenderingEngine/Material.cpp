@@ -1,5 +1,5 @@
 #include "Material.h"
-#include "BVulkan.h"
+#include "VulkanAPI.h"
 
 Material::Material()
 {
@@ -84,10 +84,10 @@ void Material::Finish()
 	xInitDescriptorSetLayout(&program);
 	xInitDescriptorPool(&program);
 	xInitDescriptorSet(&program);
-	fixedPipeline->mDescriptorSetLayout = &program.descriptorSetLayout;
-	fixedPipeline->mDescriptorSetLayoutCount = 1;
-	fixedPipeline->mShaderStages = program.shaderStages;
-	fixedPipeline->mShaderStageCount = program.shaderStageCount;
+	fixedPipeline->descriptorSetLayout = &program.descriptorSetLayout;
+	fixedPipeline->descriptorSetLayoutCount = 1;
+	fixedPipeline->shaderStages = program.shaderStages;
+	fixedPipeline->shaderStageCount = program.shaderStageCount;
 	xInitPipelineLayout(fixedPipeline);
 	xCreateFixedPipeline(fixedPipeline);
 }
