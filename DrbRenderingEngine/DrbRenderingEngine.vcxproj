@@ -129,6 +129,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Example_DeferredShadowMapping.cpp" />
+    <ClCompile Include="Example_ForwardShadowMapping.cpp" />
+    <ClCompile Include="Example_MultiThreading.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FullScreenQuad.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -145,6 +148,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Example.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="FullScreenQuad.h" />
     <ClInclude Include="Ground.h" />
@@ -168,10 +172,16 @@
     <None Include="Res\fsq.vert" />
     <None Include="Res\ground.frag" />
     <None Include="Res\ground.vert" />
+    <None Include="Res\ground_forward.frag" />
+    <None Include="Res\ground_forward.vert" />
     <None Include="Res\renderdepth.frag" />
     <None Include="Res\renderdepth.vert" />
+    <None Include="Res\skybox.frag" />
+    <None Include="Res\skybox.vert" />
     <None Include="Res\sphere.frag" />
     <None Include="Res\sphere.vert" />
+    <None Include="Res\sphere_forward.frag" />
+    <None Include="Res\sphere_forward.vert" />
     <None Include="Res\test.frag" />
     <None Include="Res\test.vert" />
   </ItemGroup>

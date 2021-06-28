@@ -279,8 +279,6 @@ void xConfigSampler2D(XProgram* program, int binding, VkImageView imageview, VkS
 /// <param name="v"></param>
 void xUniform4fv(XProgram* program, int location, float* v);
 
-unsigned char* LoadImageFromFile(const char* path, int& width, int& height, int& channel, int force_channel
-	, bool flipY = false);
 XTexture* xGetDefaultTexture();
 
 void xRebindUniformBuffer(XProgram* program, int binding, XUniformBuffer* ubo);
@@ -353,7 +351,6 @@ VkSampleCountFlagBits xGetGlobalFrameBufferSampleCount();
 VkFramebuffer xAquireRenderTarget();
 uint32_t xGetCurrenRenderTargetIndex();
 
-// Éú³ÉVBOÏÔ´æ»º³åÇø
 #define xGenVertexBuffer(size, buffer, memory) \
 	xGenBuffer(buffer, memory, size, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 #define xGenIndexBuffer(size, buffer, memory) \
@@ -365,3 +362,6 @@ uint32_t xGetCurrenRenderTargetIndex();
 	xBufferSubData(buffer, VK_BUFFER_USAGE_TRANSFER_SRC_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, data, size);
 
 unsigned char* LoadFileContent(const char* path, int& filesize);
+char* LoadFileContent(const char* path);
+unsigned char* LoadImageFromFile(const char* path, int& width, int& height, int& channel, int force_channel
+	, bool flipY = false);

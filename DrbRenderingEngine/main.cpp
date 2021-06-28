@@ -36,7 +36,7 @@ LRESULT CALLBACK EngineWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM
 			OnMouseMove(deltaX, deltaY);
 			originalMousePos.x = currentPos.x;
 			originalMousePos.y = currentPos.y;
-			//SetCursorPos(currentPos.x, currentPos.y);
+			SetCursorPos(originalMousePos.x, originalMousePos.y);
 		}
 		return 0;
 	case WM_KEYDOWN:

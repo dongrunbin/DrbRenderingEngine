@@ -1,16 +1,22 @@
 #include "Ground.h"
-Ground::~Ground() {
+
+Ground::~Ground()
+{
 	delete vertexBuffer;
 	delete indexBuffer;
 }
-void Ground::Init() {
+
+void Ground::Init()
+{
 	vertexBuffer = new VertexBuffer;
 	vertexBuffer->SetSize(1600);
 	indexBuffer = new IndexBuffer;
 	indexBuffer->SetSize(2400);
-	for (int z = 0; z < 20; ++z) {
+	for (int z = 0; z < 20; ++z)
+	{
 		float zStart = 10.0f - z * 1.0f;
-		for (int x = 0; x < 20; ++x) {
+		for (int x = 0; x < 20; ++x)
+		{
 			int offset = (x + z * 20) * 4;
 			float xStart = x * 1.0f - 10.0f;
 			vertexBuffer->SetPosition(offset, xStart, -1.0f, zStart);
@@ -21,13 +27,15 @@ void Ground::Init() {
 			vertexBuffer->SetNormal(offset + 1, 0.0f, 1.0f, 0.0f);
 			vertexBuffer->SetNormal(offset + 2, 0.0f, 1.0f, 0.0f);
 			vertexBuffer->SetNormal(offset + 3, 0.0f, 1.0f, 0.0f);
-			if ((x % 2) ^ (z % 2)) {
+			if ((x % 2) ^ (z % 2))
+			{
 				vertexBuffer->SetTexcoord(offset, 0.1f, 0.1f, 0.1f, 0.1f);
 				vertexBuffer->SetTexcoord(offset + 1, 0.1f, 0.1f, 0.1f, 0.1f);
 				vertexBuffer->SetTexcoord(offset + 2, 0.1f, 0.1f, 0.1f, 0.1f);
 				vertexBuffer->SetTexcoord(offset + 3, 0.1f, 0.1f, 0.1f, 0.1f);
 			}
-			else {
+			else
+			{
 				vertexBuffer->SetTexcoord(offset, 0.9f, 0.9f, 0.9f, 0.1f);
 				vertexBuffer->SetTexcoord(offset + 1, 0.9f, 0.9f, 0.9f, 0.1f);
 				vertexBuffer->SetTexcoord(offset + 2, 0.9f, 0.9f, 0.9f, 0.1f);
@@ -44,7 +52,9 @@ void Ground::Init() {
 	vertexBuffer->SubmitData();
 	indexBuffer->SubmitData();
 }
-void Ground::Draw(VkCommandBuffer commandbuffer) {
+
+void Ground::Draw(VkCommandBuffer commandbuffer)
+{
 	xSetDynamicState(material->fixedPipeline, commandbuffer);
 	VkBuffer vertexbuffers[] = { vertexBuffer->buffer };
 	VkDeviceSize offsets[] = { 0 };
@@ -57,6 +67,8 @@ void Ground::Draw(VkCommandBuffer commandbuffer) {
 		0, nullptr);
 	vkCmdDrawIndexed(commandbuffer, indexBuffer->indexCount, 1, 0, 0, 0);
 }
-void Ground::SetMaterial(Material* material) {
+
+void Ground::SetMaterial(Material* material)
+{
 	this->material = material;
 }

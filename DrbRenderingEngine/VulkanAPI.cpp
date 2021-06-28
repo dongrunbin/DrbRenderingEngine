@@ -319,6 +319,7 @@ void XVertexData::SetPosition(float x, float y, float z, float w)
 	position[2] = z;
 	position[3] = w;
 }
+
 void XVertexData::SetTexcoord(float x, float y, float z, float w)
 {
 	texcoord[0] = x;
@@ -326,6 +327,7 @@ void XVertexData::SetTexcoord(float x, float y, float z, float w)
 	texcoord[2] = z;
 	texcoord[3] = w;
 }
+
 void XVertexData::SetNormal(float x, float y, float z, float w)
 {
 	normal[0] = x;
@@ -333,6 +335,7 @@ void XVertexData::SetNormal(float x, float y, float z, float w)
 	normal[2] = z;
 	normal[3] = w;
 }
+
 void XVertexData::SetTangent(float x, float y, float z, float w)
 {
 	tangent[0] = x;
@@ -340,6 +343,7 @@ void XVertexData::SetTangent(float x, float y, float z, float w)
 	tangent[2] = z;
 	tangent[3] = w;
 }
+
 const VkVertexInputBindingDescription& XVertexData::BindingDescription()
 {
 	static VkVertexInputBindingDescription binding_description = {};
@@ -348,6 +352,7 @@ const VkVertexInputBindingDescription& XVertexData::BindingDescription()
 	binding_description.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 	return binding_description;
 }
+
 const std::vector<VkVertexInputAttributeDescription>& XVertexData::AttributeDescriptions()
 {
 	static std::vector<VkVertexInputAttributeDescription> attributesDescriptions;
@@ -760,6 +765,7 @@ void xInitSrcAccessMask(VkImageLayout oldLayout, VkImageMemoryBarrier& barrier)
 		break;
 	}
 }
+
 void xInitDstAccessMask(VkImageLayout newLayout, VkImageMemoryBarrier& barrier)
 {
 	switch (newLayout)
@@ -886,29 +892,6 @@ void xUniform4fv(XProgram* program, int location, float* v)
 	//xSubmitUniformBuffer(&program->vertexShaderVectorUniformBuffer);
 }
 
-unsigned char* LoadImageFromFile(const char* path, int& width, int& height, int& channel,
-	int force_channel, bool flipY)
-{
-	unsigned char* result = stbi_load(path, &width, &height, &channel, force_channel);
-	if (result == nullptr) {
-		return nullptr;
-	}
-	if (false == flipY) {
-		for (int j = 0; j * 2 < height; ++j) {
-			int index1 = j * width * channel;
-			int index2 = (height - 1 - j) * width * channel;
-			for (int i = width * channel; i > 0; --i) {
-				unsigned char temp = result[index1];
-				result[index1] = result[index2];
-				result[index2] = temp;
-				++index1;
-				++index2;
-			}
-		}
-	}
-	return result;
-}
-
 XTexture* xGetDefaultTexture()
 {
 	return sDefaultTexture;
@@ -950,14 +933,17 @@ void xUseProgram(XProgram* program)
 {
 	sCurrentProgram = program;
 }
+
 void xBindVertexBuffer(XBufferObject* vbo)
 {
 	sCurrentVBO = vbo;
 }
+
 void xBindElementBuffer(XBufferObject* ibo)
 {
 	sCurrentIBO = ibo;
 }
+
 void xDrawArrays(VkCommandBuffer commandbuffer, int offset, int count)
 {
 	xSetDynamicState(&sCurrentProgram->fixedPipeline, commandbuffer);
@@ -1094,10 +1080,12 @@ void xSetColorAttachmentCount(XFixedPipeline* pipeline, int count)
 		pipeline->colorBlendAttachmentStates[i].alphaBlendOp = VK_BLEND_OP_ADD;
 	}
 }
+
 void xEnableBlend(XFixedPipeline* pipeline, int attachment, VkBool32 enable)
 {
 	pipeline->colorBlendAttachmentStates[attachment].blendEnable = enable;
 }
+
 void xBlend(XFixedPipeline* p, int attachment, VkBlendFactor s_c, VkBlendFactor s_a,
 	VkBlendFactor d_c, VkBlendFactor d_a)
 {
@@ -1106,23 +1094,28 @@ void xBlend(XFixedPipeline* p, int attachment, VkBlendFactor s_c, VkBlendFactor 
 	p->colorBlendAttachmentStates[attachment].dstColorBlendFactor = d_c;
 	p->colorBlendAttachmentStates[attachment].dstAlphaBlendFactor = d_a;
 }
+
 void xBlendOp(XFixedPipeline* p, int attachment, VkBlendOp color, VkBlendOp alpha)
 {
 	p->colorBlendAttachmentStates[attachment].colorBlendOp = color;
 	p->colorBlendAttachmentStates[attachment].alphaBlendOp = alpha;
 }
+
 void xPolygonMode(XFixedPipeline* p, VkPolygonMode mode)
 {
 	p->rasterizer.polygonMode = mode;
 }
+
 void xDisableRasterizer(XFixedPipeline* p, VkBool32 disable)
 {
 	p->rasterizer.rasterizerDiscardEnable = disable;
 }
+
 void xEnableDepthTest(XFixedPipeline* p, VkBool32 enable)
 {
 	p->depthStencilState.depthTestEnable = enable;
 }
+
 void xInitPipelineLayout(XFixedPipeline* p)
 {
 	VkPushConstantRange pushconstancrange = {};
@@ -1137,6 +1130,7 @@ void xInitPipelineLayout(XFixedPipeline* p)
 	ci.pushConstantRangeCount = 1;
 	vkCreatePipelineLayout(sVulkanDevice, &ci, nullptr, &p->pipelineLayout);
 }
+
 void xCreateFixedPipeline(XFixedPipeline* p)
 {
 	const auto& bindingdescriptions = XVertexData::BindingDescription();
@@ -1179,6 +1173,7 @@ void xCreateFixedPipeline(XFixedPipeline* p)
 	vkCreateGraphicsPipelines(sVulkanDevice, VK_NULL_HANDLE, 1, &pipelineinfo, nullptr,
 		&p->pipeline);
 }
+
 void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer)
 {
 	vkCmdSetViewport(commandbuffer, 0, 1, &p->viewport);
@@ -1187,6 +1182,7 @@ void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer)
 	vkCmdPushConstants(commandbuffer, p->pipelineLayout, p->pushConstantShaderStage, 0,
 		sizeof(XVector4f) * p->pushConstantCount, p->pushConstants);
 }
+
 void xGenImageCube(XTexture* texture, uint32_t w, uint32_t h, VkFormat f,
 	VkImageUsageFlags usage, VkSampleCountFlagBits sample_count, int mipmap)
 {
@@ -1214,6 +1210,7 @@ void xGenImageCube(XTexture* texture, uint32_t w, uint32_t h, VkFormat f,
 	vkAllocateMemory(sVulkanDevice, &mai, nullptr, &texture->memory);
 	vkBindImageMemory(sVulkanDevice, texture->image, texture->memory, 0);
 }
+
 void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixel)
 {
 	VkDeviceSize offset_unit = width * height;
@@ -1260,6 +1257,7 @@ void xSubmitImageCube(XTexture* texture, int width, int height, const void* pixe
 	vkDestroyBuffer(sVulkanDevice, tempbuffer, nullptr);
 	vkFreeMemory(sVulkanDevice, tempmemory, nullptr);
 }
+
 void xGenImageViewCube(XTexture* texture, int mipmap)
 {
 	VkImageViewCreateInfo ivci = {};
@@ -1369,6 +1367,7 @@ static void xInitGlobalRenderPass()
 	cpci.pSubpasses = &subpass;
 	vkCreateRenderPass(sVulkanDevice, &cpci, nullptr, &sRenderPass);
 }
+
 static void xInitSystemColorBuffer()
 {
 	sColorBuffer = new XTexture;
@@ -1378,6 +1377,7 @@ static void xInitSystemColorBuffer()
 		xGetGlobalFrameBufferSampleCount());
 	xGenImageView2D(sColorBuffer);
 }
+
 static void xInitSystemDepthBuffer()
 {
 	sDepthBuffer = new XTexture(VK_IMAGE_ASPECT_DEPTH_BIT);
@@ -1387,6 +1387,7 @@ static void xInitSystemDepthBuffer()
 		xGetGlobalFrameBufferSampleCount());
 	xGenImageView2D(sDepthBuffer);
 }
+
 static void xFrameBufferFinish(XSystemFrameBuffer* fbo)
 {
 	VkImageView render_targets[3];
@@ -1490,10 +1491,12 @@ void xInitCommandPool()
 	ci.queueFamilyIndex = sGraphicQueueFamily;
 	vkCreateCommandPool(sVulkanDevice, &ci, nullptr, &sCommandPool);
 }
+
 VkCommandPool xGetCommandPool()
 {
 	return sCommandPool;
 }
+
 void xInitSemaphores()
 {
 	VkSemaphoreCreateInfo ci = {};
@@ -1501,10 +1504,12 @@ void xInitSemaphores()
 	vkCreateSemaphore(sVulkanDevice, &ci, nullptr, &sReadyToRender);
 	vkCreateSemaphore(sVulkanDevice, &ci, nullptr, &sReadyToPresent);
 }
+
 VkSemaphore xGetReadyToRenderSemaphore()
 {
 	return sReadyToRender;
 }
+
 VkSemaphore xGetReadyToPresentSemaphore()
 {
 	return sReadyToPresent;
@@ -1562,10 +1567,12 @@ void xInitSwapChain()
 		vkCreateImageView(sVulkanDevice, &ivci, nullptr, &sSwapChainImageViews[i]);
 	}
 }
+
 VkSwapchainKHR xGetSwapChain()
 {
 	return sSwapChain;
 }
+
 VkFormat xGetSwapChainImageFormat()
 {
 	return sSwapChainImageFormat;
@@ -1621,30 +1628,37 @@ void xInitVulkanDevice()
 	vkGetDeviceQueue(sVulkanDevice, sGraphicQueueFamily, 0, &sGraphicQueue);
 	vkGetDeviceQueue(sVulkanDevice, sPresentQueueFamily, 0, &sPresentQueue);
 }
+
 VkDevice xGetVulkanDevice()
 {
 	return sVulkanDevice;
 }
+
 VkQueue xGetGraphicQueue()
 {
 	return sGraphicQueue;
 }
+
 VkQueue xGetPresentQueue()
 {
 	return sPresentQueue;
 }
+
 int xGetGraphicQueueFamily()
 {
 	return sGraphicQueueFamily;
 }
+
 int xGetPresentQueueFamily()
 {
 	return sPresentQueueFamily;
 }
+
 VkPhysicalDevice xGetVulkanPhysicalDevice()
 {
 	return sPhysicalDevice;
 }
+
 VkSampleCountFlagBits xGetMaxMSAASampleCount()
 {
 	VkPhysicalDeviceProperties physicalproperties;
@@ -1662,13 +1676,15 @@ VkSampleCountFlagBits xGetMaxMSAASampleCount()
 	if (count & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
 	return VK_SAMPLE_COUNT_1_BIT;
 }
+
 void xInitVulkanPhysicalDevice()
 {
 	uint32_t deviceCount = 0;
 	vkEnumeratePhysicalDevices(sVulkanInstance, &deviceCount, nullptr);
 	VkPhysicalDevice* devices = new VkPhysicalDevice[deviceCount];
 	vkEnumeratePhysicalDevices(sVulkanInstance, &deviceCount, devices);
-	for (uint32_t i = 0; i < deviceCount; ++i) {
+	for (uint32_t i = 0; i < deviceCount; ++i)
+	{
 		VkPhysicalDevice* current_device = &devices[i];
 		VkPhysicalDeviceProperties properties;
 		VkPhysicalDeviceFeatures features;
@@ -1680,17 +1696,21 @@ void xInitVulkanPhysicalDevice()
 		vkGetPhysicalDeviceQueueFamilyProperties(*current_device, &queue_family_count, queuefamilyproperties);
 		sPresentQueueFamily = -1;
 		sGraphicQueueFamily = -1;
-		for (uint32_t j = 0; j < queue_family_count; ++j) {
+		for (uint32_t j = 0; j < queue_family_count; ++j)
+		{
 			VkBool32 present_support = false;
 			vkGetPhysicalDeviceSurfaceSupportKHR(*current_device, j, sVulkanSurface, &present_support);
-			if (queuefamilyproperties[j].queueCount > 0 && present_support) {
+			if (queuefamilyproperties[j].queueCount > 0 && present_support)
+			{
 				sPresentQueueFamily = j;
 			}
 			if (queuefamilyproperties[j].queueCount > 0 &&
-				queuefamilyproperties[j].queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+				queuefamilyproperties[j].queueFlags & VK_QUEUE_GRAPHICS_BIT)
+			{
 				sGraphicQueueFamily = j;
 			}
-			if (sGraphicQueueFamily != -1 && sPresentQueueFamily != -1) {
+			if (sGraphicQueueFamily != -1 && sPresentQueueFamily != -1)
+			{
 				sPhysicalDevice = *current_device;
 				sMaxSampleCount = xGetMaxMSAASampleCount();
 				return;
@@ -1700,6 +1720,7 @@ void xInitVulkanPhysicalDevice()
 	}
 	delete[]devices;
 }
+
 static void InitVulkanInstance()
 {
 	VkApplicationInfo appinfo = {};
@@ -1713,7 +1734,7 @@ static void InitVulkanInstance()
 	const char* extensions[] = {
 		VK_KHR_SURFACE_EXTENSION_NAME,
 		VK_KHR_WIN32_SURFACE_EXTENSION_NAME,
-		VK_EXT_DEBUG_REPORT_EXTENSION_NAME
+		VK_EXT_DEBUG_REPORT_EXTENSION_NAME,
 	};
 	const char* layers[] = {
 		"VK_LAYER_LUNARG_standard_validation"
@@ -1728,6 +1749,7 @@ static void InitVulkanInstance()
 	ci.ppEnabledLayerNames = layers;
 	vkCreateInstance(&ci, nullptr, &sVulkanInstance);
 }
+
 static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 	VkDebugReportFlagsEXT                       flags,
 	VkDebugReportObjectTypeEXT                  objectType,
@@ -1742,28 +1764,9 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_callback(
 	printf("validation layer : %s\n", pMessage);
 	return VK_FALSE;
 }
+
 static void InitDebugger()
 {
-	VkDebugReportCallbackCreateInfoEXT ci = {};
-	ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
-	ci.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
-	ci.pfnCallback = debug_callback;
-	__vkCreateDebugReportCallback(sVulkanInstance, &ci, nullptr, &sVulkanDebugger);
-}
-static void InitSurface()
-{
-	VkWin32SurfaceCreateInfoKHR ci = {};
-	ci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
-	ci.hinstance = GetModuleHandle(NULL);
-	ci.hwnd = (HWND)sWindowHWND;
-	__vkCreateWin32SurfaceKHR(sVulkanInstance, &ci, nullptr, &sVulkanSurface);
-}
-void xInitVulkan(void* param, int width, int height)
-{
-	sWindowHWND = param;
-	sViewportWidth = width;
-	sViewportHeight = height;
-	InitVulkanInstance();
 	__vkCreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(
 		sVulkanInstance,
 		"vkCreateDebugReportCallbackEXT");
@@ -1773,6 +1776,33 @@ void xInitVulkan(void* param, int width, int height)
 	__vkCreateWin32SurfaceKHR = (PFN_vkCreateWin32SurfaceKHR)vkGetInstanceProcAddr(
 		sVulkanInstance,
 		"vkCreateWin32SurfaceKHR");
+	VkDebugReportCallbackCreateInfoEXT ci = {};
+	ci.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CALLBACK_CREATE_INFO_EXT;
+	ci.flags = 
+		VK_DEBUG_REPORT_WARNING_BIT_EXT |
+		VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT | 
+		VK_DEBUG_REPORT_ERROR_BIT_EXT | 
+		VK_DEBUG_REPORT_DEBUG_BIT_EXT;
+	ci.pfnCallback = debug_callback;
+	__vkCreateDebugReportCallback(sVulkanInstance, &ci, nullptr, &sVulkanDebugger);
+}
+
+static void InitSurface()
+{
+	VkWin32SurfaceCreateInfoKHR ci = {};
+	ci.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+	ci.hinstance = GetModuleHandle(NULL);
+	ci.hwnd = (HWND)sWindowHWND;
+	__vkCreateWin32SurfaceKHR(sVulkanInstance, &ci, nullptr, &sVulkanSurface);
+}
+
+void xInitVulkan(void* param, int width, int height)
+{
+	sWindowHWND = param;
+	sViewportWidth = width;
+	sViewportHeight = height;
+
+	InitVulkanInstance();
 	InitDebugger();
 	InitSurface();
 	xInitVulkanPhysicalDevice();
@@ -1783,6 +1813,7 @@ void xInitVulkan(void* param, int width, int height)
 	xInitSemaphores();
 	xInitDefaultTexture();
 }
+
 VkSampleCountFlagBits xGetGlobalFrameBufferSampleCount()
 {
 #if MSAA
@@ -1791,32 +1822,40 @@ VkSampleCountFlagBits xGetGlobalFrameBufferSampleCount()
 	return VK_SAMPLE_COUNT_1_BIT;
 #endif
 }
+
 int xGetViewportWidth()
 {
 	return sViewportWidth;
 }
+
 int xGetViewportHeight()
 {
 	return sViewportHeight;
 }
+
 VkFramebuffer xAquireRenderTarget()
 {
 	vkAcquireNextImageKHR(sVulkanDevice, sSwapChain, 1000000000, sReadyToRender, VK_NULL_HANDLE,
 		&sCurrentRenderFrameBufferIndex);
 	return sSystemFramebuffer[sCurrentRenderFrameBufferIndex].framebuffer;
 }
+
 uint32_t xGetCurrenRenderTargetIndex()
 {
 	return sCurrentRenderFrameBufferIndex;
 }
-unsigned char* LoadFileContent(const char* path, int& filesize) {
+
+unsigned char* LoadFileContent(const char* path, int& filesize)
+{
 	unsigned char* fileContent = nullptr;
 	filesize = 0;
 	FILE* pFile = fopen(path, "rb");
-	if (pFile) {
+	if (pFile)
+	{
 		fseek(pFile, 0, SEEK_END);
 		int nLen = ftell(pFile);
-		if (nLen > 0) {
+		if (nLen > 0)
+		{
 			rewind(pFile);
 			fileContent = new unsigned char[nLen + 1];
 			fread(fileContent, sizeof(unsigned char), nLen, pFile);
@@ -1826,4 +1865,62 @@ unsigned char* LoadFileContent(const char* path, int& filesize) {
 		fclose(pFile);
 	}
 	return fileContent;
+}
+
+char* LoadFileContent(const char* path)
+{
+	FILE* pFile;
+	errno_t err = fopen_s(&pFile, path, "rb");
+	if (pFile)
+	{
+		fseek(pFile, 0, SEEK_END);
+		int nLen = ftell(pFile);
+		char* buffer = nullptr;
+		if (nLen != 0)
+		{
+			char* buffer = new char[nLen + 1];
+			rewind(pFile);
+			fread(buffer, nLen, 1, pFile);
+			buffer[nLen] = '\0';
+			fclose(pFile);
+			return buffer;
+		}
+		else
+		{
+			printf("load file %s fail. content length is 0.\n", path);
+		}
+	}
+	else
+	{
+		printf("open file %s fail.\n", path);
+	}
+	fclose(pFile);
+	return nullptr;
+}
+
+unsigned char* LoadImageFromFile(const char* path, int& width, int& height, int& channel,
+	int force_channel, bool flipY)
+{
+	unsigned char* result = stbi_load(path, &width, &height, &channel, force_channel);
+	if (result == nullptr)
+	{
+		return nullptr;
+	}
+	if (false == flipY)
+	{
+		for (int j = 0; j * 2 < height; ++j)
+		{
+			int index1 = j * width * channel;
+			int index2 = (height - 1 - j) * width * channel;
+			for (int i = width * channel; i > 0; --i)
+			{
+				unsigned char temp = result[index1];
+				result[index1] = result[index2];
+				result[index2] = temp;
+				++index1;
+				++index2;
+			}
+		}
+	}
+	return result;
 }

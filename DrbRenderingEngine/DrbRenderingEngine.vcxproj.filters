@@ -57,6 +57,15 @@
     <ClCompile Include="FrameBuffer.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Example_DeferredShadowMapping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Example_ForwardShadowMapping.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Example_MultiThreading.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h">
@@ -101,6 +110,9 @@
     <ClInclude Include="Light.h">
       <Filter>源文件</Filter>
     </ClInclude>
+    <ClInclude Include="Example.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Res\ground.frag">
@@ -143,6 +155,24 @@
       <Filter>Res</Filter>
     </None>
     <None Include="Res\deferred.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\skybox.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\skybox.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\ground_forward.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\ground_forward.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\sphere_forward.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\sphere_forward.vert">
       <Filter>Res</Filter>
     </None>
   </ItemGroup>

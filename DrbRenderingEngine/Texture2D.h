@@ -16,7 +16,7 @@ class TextureCube : public XTexture
 public:
 	TextureCube();
 	~TextureCube();
-	void Init(const char* path);
+	void Init(const char* right, const char* left, const char* top, const char* bottom, const char* back, const char* front);
 	void SetFilter(VkFilter min_filter, VkFilter mag_filter);
 	void SetWrapMode(VkSamplerAddressMode wrapu, VkSamplerAddressMode wrapv, VkSamplerAddressMode wrapw);
 };

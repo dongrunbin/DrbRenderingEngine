@@ -3,9 +3,11 @@
 Texture2D::Texture2D(VkImageAspectFlags imageaspect) :XTexture(imageaspect)
 {
 }
+
 Texture2D::~Texture2D()
 {
 }
+
 void Texture2D::SetImage(const char* path)
 {
 	format = VK_FORMAT_R8G8B8A8_UNORM;
@@ -18,11 +20,13 @@ void Texture2D::SetImage(const char* path)
 	xGenSampler(this);
 	delete[]pixel;
 }
+
 void Texture2D::SetFilter(VkFilter min_filter, VkFilter mag_filter)
 {
 	minFilter = min_filter;
 	magFilter = mag_filter;
 }
+
 void Texture2D::SetWrapMode(VkSamplerAddressMode wrapu, VkSamplerAddressMode wrapv,
 	VkSamplerAddressMode wrapw)
 {
@@ -34,41 +38,44 @@ void Texture2D::SetWrapMode(VkSamplerAddressMode wrapu, VkSamplerAddressMode wra
 TextureCube::TextureCube()
 {
 }
+
 TextureCube::~TextureCube()
 {
 }
-void TextureCube::Init(const char* path) {
+
+void TextureCube::Init(const char* right, const char* left, const char* top, const char* bottom, const char* back, const char* front)
+{
 	format = VK_FORMAT_R8G8B8A8_UNORM;
 	unsigned char* image_data = nullptr;
 	int image_width, image_height, channel;
-	unsigned char* pixel = LoadImageFromFile("Res/skybox/right.bmp", image_width, image_height, channel, 4, true);
+	unsigned char* pixel = LoadImageFromFile(right, image_width, image_height, channel, 4, true);
 	image_data = new unsigned char[image_width * image_height * 4 * 6];
 	int image_unit_size = image_width * image_height * 4;
 	int offset = 0;
 	memcpy(image_data, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
-	pixel = LoadImageFromFile("Res/skybox/left.bmp", image_width, image_height, channel, 4, true);
+	pixel = LoadImageFromFile(left, image_width, image_height, channel, 4, true);
 	memcpy(image_data + offset, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
 
-	pixel = LoadImageFromFile("Res/skybox/top.bmp", image_width, image_height, channel, 4, true);
+	pixel = LoadImageFromFile(top, image_width, image_height, channel, 4, true);
 	memcpy(image_data + offset, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
 
-	pixel = LoadImageFromFile("Res/skybox/bottom.bmp", image_width, image_height, channel, 4, true);
+	pixel = LoadImageFromFile(bottom, image_width, image_height, channel, 4, true);
 	memcpy(image_data + offset, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
 
-	pixel = LoadImageFromFile("Res/skybox/back.bmp", image_width, image_height, channel, 4, true);
+	pixel = LoadImageFromFile(back, image_width, image_height, channel, 4, true);
 	memcpy(image_data + offset, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
 
-	pixel = LoadImageFromFile("Res/skybox/front.bmp", image_width, image_height, channel, 4, true);
+	pixel = LoadImageFromFile(front, image_width, image_height, channel, 4, true);
 	memcpy(image_data + offset, pixel, image_unit_size);
 	offset += image_unit_size;
 	delete[]pixel;
@@ -80,12 +87,16 @@ void TextureCube::Init(const char* path) {
 	xGenSampler(this);
 	delete[] image_data;
 }
-void TextureCube::SetFilter(VkFilter min_filter, VkFilter mag_filter) {
+
+void TextureCube::SetFilter(VkFilter min_filter, VkFilter mag_filter)
+{
 	minFilter = min_filter;
 	magFilter = mag_filter;
 }
+
 void TextureCube::SetWrapMode(VkSamplerAddressMode wrapu, VkSamplerAddressMode wrapv,
-	VkSamplerAddressMode wrapw) {
+	VkSamplerAddressMode wrapw)
+{
 	wrapU = wrapu;
 	wrapV = wrapv;
 	wrapW = wrapw;

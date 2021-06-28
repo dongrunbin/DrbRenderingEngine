@@ -8,5 +8,5 @@ layout(push_constant) uniform AliceBuiltinConstants
 layout(binding=4)uniform sampler2D U_Texture0;
 layout(location=0)out vec4 OutColor0;
 void main(){
-	OutColor0=texture(U_Texture0,vec2(V_Texcoord.x, 1 - V_Texcoord.y));
+	OutColor0=texture(U_Texture0,vec2(V_Texcoord.x, 1.0 - V_Texcoord.y));
 }
