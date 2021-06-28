@@ -2,6 +2,7 @@
 #include "Example.h"
 #include "Example_ForwardShadowMapping.cpp"
 #include "Example_DeferredShadowMapping.cpp"
+#include "Example_Lighting.cpp"
 
 Example* example;
 
@@ -9,6 +10,7 @@ void Init()
 {
 	//example = new ForwardShadowMapping();
 	example = new DeferredShadowMapping();
+	//example = new ExampleLighting();
 	example->Init();
 }
 

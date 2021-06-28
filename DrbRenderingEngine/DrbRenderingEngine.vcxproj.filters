@@ -66,6 +66,9 @@
     <ClCompile Include="Example_MultiThreading.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Example_Lighting.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h">
@@ -173,6 +176,12 @@
       <Filter>Res</Filter>
     </None>
     <None Include="Res\sphere_forward.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\ground_lighting.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\ground_lighting.vert">
       <Filter>Res</Filter>
     </None>
   </ItemGroup>

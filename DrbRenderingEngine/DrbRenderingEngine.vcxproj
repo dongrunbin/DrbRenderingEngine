@@ -131,6 +131,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Example_DeferredShadowMapping.cpp" />
     <ClCompile Include="Example_ForwardShadowMapping.cpp" />
+    <ClCompile Include="Example_Lighting.cpp" />
     <ClCompile Include="Example_MultiThreading.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="FullScreenQuad.cpp" />
@@ -174,6 +175,8 @@
     <None Include="Res\ground.vert" />
     <None Include="Res\ground_forward.frag" />
     <None Include="Res\ground_forward.vert" />
+    <None Include="Res\ground_lighting.frag" />
+    <None Include="Res\ground_lighting.vert" />
     <None Include="Res\renderdepth.frag" />
     <None Include="Res\renderdepth.vert" />
     <None Include="Res\skybox.frag" />
