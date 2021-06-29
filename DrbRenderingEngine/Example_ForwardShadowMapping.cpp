@@ -149,12 +149,28 @@ public:
 		skyboxMaterial->SetFixedPipeline(skyboxPipeline);
 		skyboxPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 		skyboxPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
-		skyboxPipeline->rasterizer.cullMode = VK_CULL_MODE_NONE;
-		xEnableDepthTest(skyboxPipeline, VK_FALSE);
+		skyboxPipeline->rasterizer.cullMode = VK_CULL_MODE_FRONT_BIT;
 		skyboxMaterial->Finish();
 		cube = new Model;
 		cube->LoadObjModel("Res/model/Cube.obj");
 		cube->SetMaterial(skyboxMaterial);
+
+		//draw depth buffer
+		//fsqMaterial = new Material;
+		//fsqMaterial->Init("Res/renderdepth.vsb", "Res/renderdepth.fsb");
+		//fsqMaterial->SetTexture(4, (&fbos[0])->depthBuffer);
+		//fsqMaterial->SubmitUniformBuffers();
+		//fsqPipeline = new XFixedPipeline;
+		//xSetColorAttachmentCount(fsqPipeline, 1);
+		//fsqPipeline->renderPass = xGetGlobalRenderPass();
+		//fsqMaterial->SetFixedPipeline(fsqPipeline);
+		//fsqPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
+		//fsqPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
+		//fsqPipeline->inputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		//fsqMaterial->Finish();
+		//fsq = new FullScreenQuad;
+		//fsq->Init();
+		//fsq->material = fsqMaterial;
 	}
 
 	void Draw(float deltaTime)
@@ -195,11 +211,12 @@ public:
 
 		//lighting pass
 		commandbuffer = xBeginRendering(commandbuffer);
-		cube->Draw(commandbuffer);
 		ground->SetMaterial(groundMaterial);
 		sphere->SetMaterial(sphereMaterial);
 		ground->Draw(commandbuffer);
 		sphere->Draw(commandbuffer);
+		cube->Draw(commandbuffer);
+		//fsq->Draw(commandbuffer);
 		xEndRendering();
 		xSwapBuffers(commandbuffer);
 	}

@@ -22,5 +22,5 @@ void main()
 	V_Texcoord=position;
 	vec4 pos = position + U_DefaultVertexVectors.CameraPos;
 	pos.w = 1.0;
-	gl_Position=U_DefaultVertexMatrices.Projection * U_DefaultVertexMatrices.View * pos;
+	gl_Position=(U_DefaultVertexMatrices.Projection * U_DefaultVertexMatrices.View * pos).xyww;
 }

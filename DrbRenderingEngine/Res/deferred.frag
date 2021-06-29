@@ -27,7 +27,7 @@ layout(binding=6)uniform sampler2D U_Texture1; // Normal
 layout(binding=7)uniform sampler2D U_Texture2; // Color / Texture
 layout(binding=8)uniform sampler2D U_Texture3; // Depth buffer
 layout(binding=9)uniform sampler2D U_Texture4; // Depth buffer
-layout(binding=10)uniform sampler2D U_Texture5; // Depth buffer
+layout(binding=10)uniform sampler2D U_Texture5; // Depth buffer of gbuffer
 
 layout(location=0)out vec4 OutColor0;
 
@@ -112,4 +112,5 @@ void main()
 
 	OutColor0 = CalculateLight(0, worldPos, normal, color);
 	OutColor0 += CalculateLight(1, worldPos, normal, color);
+	gl_FragDepth = texture(U_Texture5, vec2(V_Texcoord.x, 1 - V_Texcoord.y)).r;
 }

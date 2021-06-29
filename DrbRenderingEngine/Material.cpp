@@ -41,10 +41,10 @@ void Material::Init(const char* vertex, const char* fragment)
 		xAttachFragmentShader(&program, fs);
 	}
 
-	vertexMatrix4UBO->SetSize(8);
-	vertexVector4UBO->SetSize(8);
-	fragmentMatrix4UBO->SetSize(8);
-	fragmentVector4UBO->SetSize(8);
+	vertexMatrix4UBO->SetSize(16);
+	vertexVector4UBO->SetSize(16);
+	fragmentMatrix4UBO->SetSize(4);
+	fragmentVector4UBO->SetSize(4);
 	xConfigUniformBuffer(&program, 0, vertexVector4UBO, VK_SHADER_STAGE_VERTEX_BIT);
 	xConfigUniformBuffer(&program, 1, vertexMatrix4UBO, VK_SHADER_STAGE_VERTEX_BIT);
 	xConfigUniformBuffer(&program, 2, fragmentVector4UBO, VK_SHADER_STAGE_FRAGMENT_BIT);

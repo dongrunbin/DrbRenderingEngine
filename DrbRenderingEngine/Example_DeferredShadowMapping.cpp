@@ -136,6 +136,7 @@ public:
 		fsqMaterial->SetTexture(7, gbuffer->attachments[2]);
 		fsqMaterial->SetTexture(8, (&fbos[0])->depthBuffer);
 		fsqMaterial->SetTexture(9, (&fbos[1])->depthBuffer);
+		fsqMaterial->SetTexture(10, gbuffer->depthBuffer);
 		//fsqMaterial->SetTexture(10, (&fbos[2])->depthBuffer);
 		fsqMaterial->SubmitUniformBuffers();
 		fsqPipeline = new XFixedPipeline;
@@ -176,6 +177,7 @@ public:
 		skyboxMaterial->Init("Res/skybox.vsb", "Res/skybox.fsb");
 		skyboxMaterial->SetMVP(model, camera->GetViewMat(), projection);
 		skyboxMaterial->SetTexture(4, skybox);
+		skyboxMaterial->SetTexture(5, gbuffer->depthBuffer);
 		skyboxMaterial->SubmitUniformBuffers();
 		skyboxPipeline = new XFixedPipeline;
 		xSetColorAttachmentCount(skyboxPipeline, 1);
@@ -184,11 +186,13 @@ public:
 		skyboxPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 		skyboxPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
 		skyboxPipeline->rasterizer.cullMode = VK_CULL_MODE_NONE;
-		xEnableDepthTest(skyboxPipeline, VK_FALSE);
+		skyboxPipeline->depthStencilState.depthCompareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+		//xEnableDepthTest(skyboxPipeline, VK_FALSE);
 		skyboxMaterial->Finish();
 		cube = new Model;
 		cube->LoadObjModel("Res/model/Cube.obj");
 		cube->SetMaterial(skyboxMaterial);
+
 	}
 	void Draw(float deltaTime)
 	{
@@ -235,8 +239,8 @@ public:
 		vkCmdEndRenderPass(commandbuffer);
 		//lighting pass
 		xBeginRendering(commandbuffer);
-		cube->Draw(commandbuffer);
 		fsq->Draw(commandbuffer);
+		cube->Draw(commandbuffer);
 		xEndRendering();
 		xSwapBuffers(commandbuffer);
 	}
