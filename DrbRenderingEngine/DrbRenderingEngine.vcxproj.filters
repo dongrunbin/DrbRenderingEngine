@@ -69,6 +69,9 @@
     <ClCompile Include="Example_Lighting.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="Terrain.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="scene.h">
@@ -114,6 +117,9 @@
       <Filter>源文件</Filter>
     </ClInclude>
     <ClInclude Include="Example.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Terrain.h">
       <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -182,6 +188,18 @@
       <Filter>Res</Filter>
     </None>
     <None Include="Res\ground_lighting.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\terrain.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\terrain.vert">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\terrain_forward.frag">
+      <Filter>Res</Filter>
+    </None>
+    <None Include="Res\terrain_forward.vert">
       <Filter>Res</Filter>
     </None>
   </ItemGroup>

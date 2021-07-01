@@ -1,6 +1,12 @@
 #include "Camera.h"
 #include <glm/ext.hpp>
 
+Camera::Camera(int width, int height)
+{
+	projection = glm::perspective(45.0f, float(width) / float(height), 0.1f, 1000.0f);
+	projection[1][1] *= -1.0f;
+}
+
 glm::mat4 Camera::GetViewMat()
 {
 	return glm::lookAt(cameraPos, GetViewCenter(), up);

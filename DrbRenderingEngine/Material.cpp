@@ -13,6 +13,7 @@ Material::Material()
 	ubos.push_back(fragmentMatrix4UBO);
 	ubos.push_back(fragmentVector4UBO);
 }
+
 Material::~Material()
 {
 	for (auto iter = ubos.begin(); iter != ubos.end(); ++iter)
@@ -20,6 +21,7 @@ Material::~Material()
 		delete (*iter);
 	}
 }
+
 void Material::Init(const char* vertex, const char* fragment)
 {
 	VkShaderModule vs, fs;
@@ -51,6 +53,7 @@ void Material::Init(const char* vertex, const char* fragment)
 	xConfigUniformBuffer(&program, 3, fragmentMatrix4UBO, VK_SHADER_STAGE_FRAGMENT_BIT);
 	sMaterials.insert(this);
 }
+
 void Material::SetUniformBuffer(int binding, void* data, int size, VkShaderStageFlagBits shaderStageFlags)
 {
 	UniformBuffer* ubo = new UniformBuffer(XUniformBufferTypeCustom);
@@ -59,18 +62,22 @@ void Material::SetUniformBuffer(int binding, void* data, int size, VkShaderStage
 	xConfigUniformBuffer(&program, binding, ubo, shaderStageFlags);
 	ubos.push_back(ubo);
 }
+
 void Material::SetTexture(int binding, XTexture* texture)
 {
 	xConfigSampler2D(&program, binding, texture->imageView, texture->sampler);
 }
+
 void Material::SetFixedPipeline(XFixedPipeline* p)
 {
 	fixedPipeline = p;
 }
+
 void Material::RebindTexture(int binding, XTexture* texture)
 {
 	xRebindSampler(&program, binding, texture->imageView, texture->sampler);
 }
+
 void Material::SetMVP(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p)
 {
 	glm::mat4 it_m = glm::inverseTranspose(m);
@@ -79,6 +86,7 @@ void Material::SetMVP(const glm::mat4& m, const glm::mat4& v, const glm::mat4& p
 	vertexMatrix4UBO->SetMatrix(2, p);
 	vertexMatrix4UBO->SetMatrix(3, it_m);
 }
+
 void Material::Finish()
 {
 	xInitDescriptorSetLayout(&program);
@@ -91,6 +99,7 @@ void Material::Finish()
 	xInitPipelineLayout(fixedPipeline);
 	xCreateFixedPipeline(fixedPipeline);
 }
+
 void Material::SubmitUniformBuffers()
 {
 	for (auto iter = ubos.begin(); iter != ubos.end(); ++iter)
@@ -98,7 +107,9 @@ void Material::SubmitUniformBuffers()
 		(*iter)->SubmitData();
 	}
 }
+
 std::set<Material*> Material::sMaterials;
+
 void Material::CleanUp()
 {
 	for (auto iter = sMaterials.begin(); iter != sMaterials.end(); ++iter)

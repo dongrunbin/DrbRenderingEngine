@@ -6,5 +6,5 @@ layout(location=0)out vec4 OutColor0;
 
 void main()
 {
-	OutColor0=texture(U_Texture0,V_Texcoord.xyz);
+	OutColor0 = texture(U_Texture0, V_Texcoord.xyz);
 }

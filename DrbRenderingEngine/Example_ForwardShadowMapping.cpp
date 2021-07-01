@@ -29,9 +29,9 @@ private:
 	Ground* ground;
 	Model* sphere;
 	FrameBuffer* fbos;
-	glm::mat4 model;
-	glm::mat4 projection;
-	Light* lights;
+	glm::mat4 sphereModelMat;
+	glm::mat4 groundModelMat;
+	BasicLight* lights;
 	const int LIGHT_COUNT = 2;
 
 	Material* skyboxMaterial;
@@ -41,22 +41,21 @@ private:
 public:
 	void Init()
 	{
-		camera = new Camera;
+		camera = new Camera(xGetViewportWidth(), xGetViewportHeight());
 		camera->cameraPos = glm::vec3(0.0f, 5.0f, -15.0f);
 		camera->Pitch(25.0f);
-		model = glm::mat4(1.0f);
-		projection = glm::perspective(45.0f, float(xGetViewportWidth()) / float(xGetViewportHeight()), 0.1f, 100.0f);
-		projection[1][1] *= -1.0f;
+		sphereModelMat = glm::mat4(1.0f);
+		groundModelMat = glm::mat4(1.0f);
 
-		lights = new Light[LIGHT_COUNT];
+		lights = new BasicLight[LIGHT_COUNT];
 		lights[0].pos = glm::vec4(0.0f, 5.0f, 0.0f, 1.0f);
 		lights[0].color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		lights[0].view = glm::lookAt(glm::vec3(lights[0].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-		lights[0].projection = projection;
+		lights[0].projection = camera->projection;
 		lights[1].pos = glm::vec4(0.0f, 2.0f, 5.0f, 1.0f);
 		lights[1].color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 		lights[1].view = glm::lookAt(glm::vec3(lights[1].pos), glm::vec3(0.0f), glm::vec3(0.0f, 0.0f, -1.0f));
-		lights[1].projection = projection;
+		lights[1].projection = camera->projection;
 		fbos = new FrameBuffer[LIGHT_COUNT];
 		for (int i = 0; i < LIGHT_COUNT; ++i)
 		{
@@ -81,9 +80,9 @@ public:
 		//sphere
 		sphereMaterial = new Material;
 		sphereMaterial->Init("Res/sphere_forward.vsb", "Res/sphere_forward.fsb");
-		sphereMaterial->SetMVP(model, camera->GetViewMat(), projection);
+		sphereMaterial->SetMVP(sphereModelMat, camera->GetViewMat(), camera->projection);
 		sphereMaterial->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-		sphereMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
+		sphereMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(BasicLight), VK_SHADER_STAGE_FRAGMENT_BIT);
 		sphereMaterial->SetTexture(5, skybox);
 		sphereMaterial->SubmitUniformBuffers();
 		spherePipeline = new XFixedPipeline;
@@ -100,9 +99,9 @@ public:
 		//ground
 		groundMaterial = new Material;
 		groundMaterial->Init("Res/ground_forward.vsb", "Res/ground_forward.fsb");
-		groundMaterial->SetMVP(model, camera->GetViewMat(), projection);
+		groundMaterial->SetMVP(groundModelMat, camera->GetViewMat(), camera->projection);
 		groundMaterial->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-		groundMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(Light), VK_SHADER_STAGE_FRAGMENT_BIT);
+		groundMaterial->SetUniformBuffer(4, lights, LIGHT_COUNT * sizeof(BasicLight), VK_SHADER_STAGE_FRAGMENT_BIT);
 		groundMaterial->SetTexture(5, (&fbos[0])->depthBuffer);
 		//groundMaterial->SetTexture(6, (&fbos[1])->depthBuffer);
 		groundMaterial->SubmitUniformBuffers();
@@ -127,7 +126,7 @@ public:
 			XFixedPipeline* depthrenderPipeline = new XFixedPipeline;
 			depthrenderPipelines[i] = depthrenderPipeline;
 			depthrenderMaterial->Init("Res/depthrender.vsb", "Res/depthrender.fsb");
-			depthrenderMaterial->SetMVP(model, lights[i].view, projection);
+			depthrenderMaterial->SetMVP(glm::mat4(1.0f), lights[i].view, camera->projection);
 			depthrenderPipeline = new XFixedPipeline;
 			xSetColorAttachmentCount(depthrenderPipeline, 1);
 			depthrenderPipeline->renderPass = (&fbos[i])->renderPass;
@@ -140,7 +139,7 @@ public:
 
 		skyboxMaterial = new Material;
 		skyboxMaterial->Init("Res/skybox.vsb", "Res/skybox.fsb");
-		skyboxMaterial->SetMVP(model, camera->GetViewMat(), projection);
+		skyboxMaterial->SetMVP(glm::mat4(1.0f), camera->GetViewMat(), camera->projection);
 		skyboxMaterial->SetTexture(4, skybox);
 		skyboxMaterial->SubmitUniformBuffers();
 		skyboxPipeline = new XFixedPipeline;
@@ -175,27 +174,14 @@ public:
 
 	void Draw(float deltaTime)
 	{
-		for (auto it = Material::sMaterials.begin(); it != Material::sMaterials.end(); it++)
-		{
-			bool isDepthRender = false;;
-			for (int i = 0; i < LIGHT_COUNT; ++i)
-			{
-				if ((*it) == depthrenderMaterials[i])
-				{
-					isDepthRender = true;
-					break;
-				}
-			}
-			if (isDepthRender)
-			{
-				continue;
-			}
-
-			(*it)->SetMVP(model, camera->GetViewMat(), projection);
-			(*it)->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-			(*it)->vertexVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
-			(*it)->SubmitUniformBuffers();
-		}
+		sphereMaterial->SetMVP(sphereModelMat, camera->GetViewMat(), camera->projection);
+		sphereMaterial->fragmentVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+		sphereMaterial->SubmitUniformBuffers();
+		groundMaterial->SetMVP(groundModelMat, camera->GetViewMat(), camera->projection);
+		groundMaterial->SubmitUniformBuffers();
+		skyboxMaterial->SetMVP(glm::mat4(1.0f), camera->GetViewMat(), camera->projection);
+		skyboxMaterial->vertexVector4UBO->SetVector4(0, camera->cameraPos.x, camera->cameraPos.y, camera->cameraPos.z, 1.0f);
+		skyboxMaterial->SubmitUniformBuffers();
 
 		VkCommandBuffer commandbuffer = 0;
 		////depth pass
@@ -204,7 +190,11 @@ public:
 			commandbuffer = (&fbos[i])->BeginRendering(commandbuffer);
 			ground->SetMaterial(depthrenderMaterials[i]);
 			sphere->SetMaterial(depthrenderMaterials[i]);
+			depthrenderMaterials[i]->SetMVP(groundModelMat, lights[i].view, lights[i].projection);
+			depthrenderMaterials[i]->SubmitUniformBuffers();
 			ground->Draw(commandbuffer);
+			depthrenderMaterials[i]->SetMVP(sphereModelMat, lights[i].view, lights[i].projection);
+			depthrenderMaterials[i]->SubmitUniformBuffers();
 			sphere->Draw(commandbuffer);
 			vkCmdEndRenderPass(commandbuffer);
 		}

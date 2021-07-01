@@ -142,6 +142,7 @@
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="stb_image_aug.c" />
+    <ClCompile Include="Terrain.cpp" />
     <ClCompile Include="Texture2D.cpp" />
     <ClCompile Include="UniformBuffer.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
@@ -159,6 +160,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="scene.h" />
     <ClInclude Include="stb_image_aug.h" />
+    <ClInclude Include="Terrain.h" />
     <ClInclude Include="Texture2D.h" />
     <ClInclude Include="UniformBuffer.h" />
     <ClInclude Include="VertexBuffer.h" />
@@ -185,6 +187,10 @@
     <None Include="Res\sphere.vert" />
     <None Include="Res\sphere_forward.frag" />
     <None Include="Res\sphere_forward.vert" />
+    <None Include="Res\terrain.frag" />
+    <None Include="Res\terrain.vert" />
+    <None Include="Res\terrain_forward.frag" />
+    <None Include="Res\terrain_forward.vert" />
     <None Include="Res\test.frag" />
     <None Include="Res\test.vert" />
   </ItemGroup>
