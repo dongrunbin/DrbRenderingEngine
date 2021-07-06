@@ -9,8 +9,8 @@ Example* example;
 void Init()
 {
 	//example = new ForwardShadowMapping();
-	//example = new DeferredShadowMapping();
-	example = new ExampleLighting();
+	example = new DeferredShadowMapping();
+	//example = new ExampleLighting();
 	example->Init();
 }
 

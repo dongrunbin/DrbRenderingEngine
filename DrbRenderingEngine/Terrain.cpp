@@ -102,28 +102,3 @@ void Terrain::Init(const char* heightMapPath)
 	vertexBuffer->SubmitData();
 	indexBuffer->SubmitData();
 }
-
-void Terrain::Draw(VkCommandBuffer commandbuffer)
-{
-	Model::Draw(commandbuffer);
-	//xSetDynamicState(material->fixedPipeline, commandbuffer);
-	//VkBuffer vertexbuffers[] = { vertexBuffer->buffer };
-	//VkDeviceSize offsets[] = { 0 };
-	//vkCmdBindPipeline(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-	//	material->fixedPipeline->pipeline);
-	//vkCmdBindVertexBuffers(commandbuffer, 0, 1, vertexbuffers, offsets);
-	//vkCmdBindIndexBuffer(commandbuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT32);
-	//vkCmdBindDescriptorSets(commandbuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-	//	material->fixedPipeline->pipelineLayout, 0, 1, &material->program.descriptorSet,
-	//	0, nullptr);
-	//for (int z = 0; z < 256; ++z)
-	//{
-	//	for (int x = 0; x < 256; ++x)
-	//	{
-	//		int quad_index = x + z * 256;
-	//		int vertex_start_index = quad_index * 4;
-	//		vkCmdDrawIndexed(commandbuffer, 6, 1, vertex_start_index, 0, 0);
-	//	}
-	//}
-
-}

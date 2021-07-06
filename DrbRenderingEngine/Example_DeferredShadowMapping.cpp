@@ -76,7 +76,7 @@ public:
 		//lights[1].projection = glm::perspective(glm::radians(90.0f), (float)xGetViewportWidth() / (float)xGetViewportHeight(), 0.1f, 15.0f);
 
 		//point light
-		lights[0].pos = glm::vec4(-4.0f, 5.0f, 0.0f, 1.0f);
+		lights[0].pos = glm::vec4(-4.0f, 4.0f, 0.0f, 1.0f);
 		lights[0].diffuseColor = glm::vec4(3.0f, 3.0f, 0.0f, 1.0f);
 		lights[0].specularColor = glm::vec4(3.0f, 3.0f, 0.0f, 1.0f);
 		//shadow
@@ -208,6 +208,8 @@ public:
 			depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
 			depthrenderPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 			depthrenderPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
+			depthrenderPipeline->rasterizer.depthBiasConstantFactor = 1.25f;
+			depthrenderPipeline->rasterizer.depthBiasSlopeFactor = 1.75f;
 			depthrenderMaterial->Finish();
 			depthrenderMaterial->SubmitUniformBuffers();
 		}

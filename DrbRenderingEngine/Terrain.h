@@ -12,5 +12,4 @@ private:
 	void GetNormal(int x, int z, float* normal);
 public:
 	void Init(const char* heightMapPath);
-	void Draw(VkCommandBuffer commandbuffer);
 };

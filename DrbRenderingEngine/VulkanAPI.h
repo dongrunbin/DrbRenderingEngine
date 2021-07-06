@@ -110,7 +110,6 @@ struct XFixedPipeline
 	XVector4f pushConstants[16];
 	int pushConstantCount;
 	VkShaderStageFlags pushConstantShaderStage;
-	float depthConstantFactor, depthClamp, depthSlopeFactor;
 	XFixedPipeline();
 	~XFixedPipeline();
 	void CleanUp();

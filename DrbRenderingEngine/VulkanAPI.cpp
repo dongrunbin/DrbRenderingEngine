@@ -290,9 +290,6 @@ XFixedPipeline::XFixedPipeline()
 	sampleCount = xGetGlobalFrameBufferSampleCount();
 	pushConstantShaderStage = VK_SHADER_STAGE_FRAGMENT_BIT;
 	pushConstantCount = 8;
-	depthConstantFactor = 0.0f;
-	depthClamp = 0.0f;
-	depthSlopeFactor = 0.0f;
 }
 
 XFixedPipeline::~XFixedPipeline()
@@ -1179,7 +1176,7 @@ void xSetDynamicState(XFixedPipeline* p, VkCommandBuffer commandbuffer)
 {
 	vkCmdSetViewport(commandbuffer, 0, 1, &p->viewport);
 	vkCmdSetScissor(commandbuffer, 0, 1, &p->scissor);
-	vkCmdSetDepthBias(commandbuffer, p->depthConstantFactor, p->depthClamp, p->depthSlopeFactor);
+	vkCmdSetDepthBias(commandbuffer, p->rasterizer.depthBiasConstantFactor, p->rasterizer.depthBiasClamp, p->rasterizer.depthBiasSlopeFactor);
 	vkCmdPushConstants(commandbuffer, p->pipelineLayout, p->pushConstantShaderStage, 0,
 		sizeof(XVector4f) * p->pushConstantCount, p->pushConstants);
 }
