@@ -17,33 +17,39 @@
 class DeferredShadowMapping : public Example
 {
 private:
+	//sphere
 	TextureCube* skybox;
 	Material* sphereMaterial;
 	XFixedPipeline* spherePipeline;
 	Model* sphere;
 	glm::mat4 sphereModelMat;
 
+	//ground
 	Material* groundMaterial;
 	XFixedPipeline* groundPipeline;
 	Ground* ground;
 	glm::mat4 groundModelMat;
 
+	//depth renderer
 	Material** depthrenderMaterials;
 	XFixedPipeline** depthrenderPipelines;
 	Material* fsqMaterial;
 	XFixedPipeline* fsqPipeline;
 	FullScreenQuad* fsq;
-
 	FrameBuffer* fbos;
+
 	FrameBuffer* gbuffer;
 
+	//light
 	Light* lights;
 	const int LIGHT_COUNT = 2;
 
+	//skybox
 	Material* skyboxMaterial;
 	XFixedPipeline* skyboxPipeline;
 	Model* cube;
 
+	//terrain
 	Terrain* terrain;
 	Material* terrainMaterial;
 	XFixedPipeline* terrainPipeline;
@@ -52,6 +58,7 @@ private:
 	Texture2D* terrainTexture;
 	glm::mat4 terrainModelMat;
 
+	//draw depth buffer. for testing
 	Material* fsq2Material;
 	XFixedPipeline* fsq2Pipeline;
 	FullScreenQuad* fsq2;
@@ -107,7 +114,7 @@ public:
 		{
 			FrameBuffer* fbo = &fbos[i];
 			fbo->SetSize(xGetViewportWidth(), xGetViewportHeight());
-			fbo->AttachColorBuffer();
+			//fbo->AttachColorBuffer();
 			fbo->AttachDepthBuffer();
 			fbo->Finish();
 		}
@@ -116,8 +123,9 @@ public:
 		gbuffer = new FrameBuffer;
 		gbuffer->SetSize(xGetViewportWidth(), xGetViewportHeight());
 		//要在gbuffer里存储世界坐标系里的position/normal/texcolor
-		gbuffer->AttachColorBuffer(VK_FORMAT_R32G32B32A32_SFLOAT);
-		gbuffer->AttachColorBuffer(VK_FORMAT_R32G32B32A32_SFLOAT);
+		//hay que almacenar world positions, normal and texcolor en gbuffer.
+		gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
+		gbuffer->AttachColorBuffer(VK_FORMAT_R16G16B16A16_SFLOAT);
 		gbuffer->AttachColorBuffer();
 		gbuffer->AttachDepthBuffer();
 		gbuffer->Finish();
@@ -186,6 +194,7 @@ public:
 		fsqPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 		fsqPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
 		fsqPipeline->inputAssetmlyState.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
+		fsqPipeline->multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 		fsqMaterial->Finish();
 		fsq = new FullScreenQuad;
 		fsq->Init();
@@ -208,8 +217,9 @@ public:
 			depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
 			depthrenderPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 			depthrenderPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
-			depthrenderPipeline->rasterizer.depthBiasConstantFactor = 1.25f;
-			depthrenderPipeline->rasterizer.depthBiasSlopeFactor = 1.75f;
+			depthrenderPipeline->multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+			//depthrenderPipeline->rasterizer.depthBiasConstantFactor = 1.25f;
+			//depthrenderPipeline->rasterizer.depthBiasSlopeFactor = 1.75f;
 			depthrenderMaterial->Finish();
 			depthrenderMaterial->SubmitUniformBuffers();
 		}
@@ -303,7 +313,6 @@ public:
 			sphere->SetMaterial(depthrenderMaterials[i]);
 			terrain->SetMaterial(depthrenderMaterials[i]);
 
-			//vkCmdSetPrimitiveTopologyEXT(commandbuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 			depthrenderMaterials[i]->SetMVP(terrainModelMat, lights[i].view, lights[i].projection);
 			depthrenderMaterials[i]->SubmitUniformBuffers();
 			terrain->Draw(commandbuffer);
@@ -314,17 +323,14 @@ public:
 			//depthrenderMaterials[i]->SubmitUniformBuffers();
 			//ground->Draw(commandbuffer);
 
-			//vkCmdSetPrimitiveTopologyEXT(commandbuffer, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP);
 			
 			vkCmdEndRenderPass(commandbuffer);
 		}
 
 		//geometry pass
 		gbuffer->BeginRendering(commandbuffer);
-		ground->SetMaterial(groundMaterial);
 		sphere->SetMaterial(sphereMaterial);
 		terrain->SetMaterial(terrainMaterial);
-		//ground->Draw(commandbuffer);
 		sphere->Draw(commandbuffer);
 		terrain->Draw(commandbuffer);
 		vkCmdEndRenderPass(commandbuffer);

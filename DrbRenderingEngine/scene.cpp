@@ -3,6 +3,7 @@
 #include "Example_ForwardShadowMapping.cpp"
 #include "Example_DeferredShadowMapping.cpp"
 #include "Example_Lighting.cpp"
+#include "Example_MultiThreading.cpp"
 
 Example* example;
 

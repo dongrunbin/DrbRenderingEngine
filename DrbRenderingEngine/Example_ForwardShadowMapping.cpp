@@ -133,6 +133,7 @@ public:
 			depthrenderMaterial->SetFixedPipeline(depthrenderPipeline);
 			depthrenderPipeline->viewport = { 0.0f, 0.0f, float(xGetViewportWidth()), float(xGetViewportHeight()), 0.0f, 1.0f };
 			depthrenderPipeline->scissor = { {0, 0}, { uint32_t(xGetViewportWidth()), uint32_t(xGetViewportHeight()) } };
+			depthrenderPipeline->multisampleState.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 			depthrenderMaterial->Finish();
 			depthrenderMaterial->SubmitUniformBuffers();
 		}

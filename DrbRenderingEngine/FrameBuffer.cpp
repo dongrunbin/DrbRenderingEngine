@@ -32,7 +32,7 @@ void FrameBuffer::AttachColorBuffer(VkFormat format)
 	Texture2D* color_buffer = new Texture2D;
 	color_buffer->format = format;
 	xGenImage(color_buffer, width, height, format, VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT |
-		VK_IMAGE_USAGE_SAMPLED_BIT, xGetGlobalFrameBufferSampleCount());
+		VK_IMAGE_USAGE_SAMPLED_BIT, VK_SAMPLE_COUNT_1_BIT);
 	xGenImageView2D(color_buffer);
 	xGenSampler(color_buffer);
 	colorBufferCount++;
@@ -47,7 +47,7 @@ void FrameBuffer::AttachDepthBuffer()
 	Texture2D* depth_buffer = new Texture2D(VK_IMAGE_ASPECT_DEPTH_BIT);
 	depth_buffer->format = VK_FORMAT_D24_UNORM_S8_UINT;
 	xGenImage(depth_buffer, width, height, depth_buffer->format,
-		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, xGetGlobalFrameBufferSampleCount());
+		VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_SAMPLE_COUNT_1_BIT);
 	xGenImageView2D(depth_buffer);
 	xGenSampler(depth_buffer);
 	depthBufferIndex = attachments.size();
@@ -92,7 +92,7 @@ void FrameBuffer::Finish()
 			{
 				0,
 				texture->format,
-				xGetGlobalFrameBufferSampleCount(),
+				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
 				VK_ATTACHMENT_STORE_OP_STORE,
 				VK_ATTACHMENT_LOAD_OP_DONT_CARE,
@@ -111,7 +111,7 @@ void FrameBuffer::Finish()
 			{
 				0,
 				texture->format,
-				xGetGlobalFrameBufferSampleCount(),
+				VK_SAMPLE_COUNT_1_BIT,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,
 				VK_ATTACHMENT_STORE_OP_STORE,
 				VK_ATTACHMENT_LOAD_OP_CLEAR,

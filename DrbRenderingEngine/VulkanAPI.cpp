@@ -1308,6 +1308,7 @@ static void xInitGlobalRenderPass()
 		VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
 	};
 	//MSAA的情况下，color buffer不需要显示
+	//en el caso de MSAA activo, color buffer no se presenta.
 	if (sample_count == VK_SAMPLE_COUNT_1_BIT)
 	{
 		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -1662,6 +1663,7 @@ VkSampleCountFlagBits xGetMaxMSAASampleCount()
 	VkPhysicalDeviceProperties physicalproperties;
 	vkGetPhysicalDeviceProperties(sPhysicalDevice, &physicalproperties);
 	//取颜色缓冲区和深度缓冲区支持采样数的最小值
+	//hay que usar el minimo entre color sample count y depth sample count
 	VkSampleCountFlags count = physicalproperties.limits.framebufferColorSampleCounts >
 		physicalproperties.limits.framebufferDepthSampleCounts ?
 		physicalproperties.limits.framebufferDepthSampleCounts :

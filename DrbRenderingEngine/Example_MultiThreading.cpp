@@ -13,15 +13,16 @@
 #include "Light.h"
 #include <thread>
 
+static FullScreenQuad* fsq = nullptr;
+static VkCommandBuffer* drawcommands = nullptr;
+
 class MultiThreading : public Example
 {
 private:
 	Material* fsqMaterial;
 	XFixedPipeline* fsqPipeline;
-	static FullScreenQuad* fsq;
 	Texture2D *texture;
-	static VkCommandBuffer* drawcommands;
-	static float time_since_time;
+	float time_since_time;
 
 public:
 	void Init()
@@ -101,7 +102,7 @@ public:
 	}
 	void OnViewportChanged(int width, int height)
 	{
-		xViewport(width, height);
+		//xViewport(width, height);
 	}
 	void OnKeyboard(unsigned char key)
 	{
